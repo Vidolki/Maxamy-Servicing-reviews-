@@ -12,34 +12,33 @@
 <style>
   :root{
     --text:#1D1D1F;
-    --wave:#E8E1D5;               /* the big arched background */
-    --card:#fff;
-    --shadow:0 8px 22px rgba(0,0,0,.08);
-    --gap:24px;                   /* gap between cards */
-    --radius:16px;                /* smaller, like your A */
-    --sidepad:72px;               /* keeps arrows away from cards */
+    --wave:#E8E1D5;   /* arched background */
+    --card:#FFFFFF;
+    --gap:24px;
+    --radius:16px;
+    --sidepad:72px;
   }
 
   *{box-sizing:border-box}
   html,body{margin:0;background:#fff;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
 
-  /* Section with the arched/wave background (full-bleed) */
+  /* Section with a CRISP, flipped arch (no blur) */
   .reviews{
     position:relative;
-    padding:44px 0 14px;          /* compact vertical spacing (like A) */
+    padding:44px 0 14px;
     overflow:hidden;
   }
   .reviews::before{
-    /* Big ellipse that creates the “wave” behind content */
     content:"";
     position:absolute; inset:0; z-index:0;
-    background:
-      radial-gradient(160% 520px at 50% -140px,
-        var(--wave) 65%, transparent 66%);
+    background:var(--wave);
+    /* crisp curved top edge, wave extends downward */
+    clip-path:ellipse(140% 60% at 50% 0%);
+    /* fallback (keeps shape if clip-path unsupported) */
+    -webkit-clip-path:ellipse(140% 60% at 50% 0%);
     pointer-events:none;
   }
 
-  /* Center content container */
   .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
 
   header{text-align:center;margin:0 0 14px}
@@ -56,22 +55,32 @@
     will-change:transform;transition:transform .55s ease;
   }
 
-  /* Card (smaller radius/shadow like A) */
+  /* Cards: NO SHADOW, flat white on the wave area */
   .card{
-    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:20px;display:flex;flex-direction:column;min-height:180px;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:none;                 /* <- removed */
+    padding:20px;
+    display:flex;flex-direction:column;min-height:180px;
     min-width:calc(100% - 3*var(--gap));  /* 1 per view (mobile) */
   }
+
+  /* Name + stars always on one line */
   .top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .name{font-weight:700}
-  .stars{margin-left:auto;letter-spacing:.06em}
+  .name{
+    font-weight:700;
+    flex:1 1 auto; min-width:0;              /* allow shrink */
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; /* keep one line */
+  }
+  .stars{flex:0 0 auto; margin-left:12px; letter-spacing:.06em}
   .stars .full{color:#1D1D1F}
   .stars .empty{color:#1D1D1F;opacity:.25}
+
   .verify{display:flex;align-items:center;gap:6px;font-size:13px;opacity:.9}
   .verify svg{width:14px;height:14px;display:block;fill:#1D1D1F}
   .body{margin-top:8px;line-height:1.45}
 
-  /* Arrows — outside the cards but inside the wave area */
+  /* Arrows */
   .nav{
     position:absolute;top:50%;transform:translateY(-50%);
     width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;
@@ -83,16 +92,16 @@
   .prev{left:18px}
   .next{right:18px}
 
-  /* Footer “brands” as plain text (not pills/links) */
+  /* Footer brands as plain text (not pills/links) */
   .brands{display:flex;gap:10px;justify-content:flex-end;margin:10px var(--sidepad) 0 0}
   .brands span{font-size:14px;opacity:.75;font-weight:600}
 
   /* Per-view widths */
   @media (min-width:640px){
-    .card{min-width:calc((100% - var(--gap)) / 2);}     /* 2 per view */
+    .card{min-width:calc((100% - var(--gap)) / 2);}
   }
   @media (min-width:1024px){
-    .card{min-width:calc((100% - 3*var(--gap)) / 4);}   /* 4 per view */
+    .card{min-width:calc((100% - 3*var(--gap)) / 4);}
     header h2{font-size:54px}
   }
 </style>
@@ -121,7 +130,6 @@
 
 <script>
 (function(){
-  // --- Your reviews (unchanged) ---
   const REVIEWS = [
     {name:"Dan B.",        text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
     {name:"Michael A.",    text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
@@ -141,9 +149,8 @@
   const prevBtn = document.querySelector('.prev');
   const nextBtn = document.querySelector('.next');
   const viewport = document.querySelector('.viewport');
-  const GAP = 24; // must match CSS --gap
+  const GAP = 24;
 
-  // helpers
   function stars(n){
     return `<span class="stars" aria-label="${n} out of 5 stars">
       <span class="full">${'★'.repeat(n)}</span><span class="empty">${'★'.repeat(5-n)}</span>
@@ -160,19 +167,17 @@
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  // loop: clone head/tail (max perView = 4)
+  // Infinite loop clones (max per view 4)
   const perViewMax = 4;
   const kids = Array.from(track.children);
   kids.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
   kids.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
-  // state
-  let index = perViewMax;
-  let step = 0;
+  let index = perViewMax, step = 0;
+
   function recalc(){
     const first = track.children[perViewMax];
     if(!first) return;
-    // include gap in step
     step = first.getBoundingClientRect().width + GAP;
     move(index, false);
   }
@@ -192,14 +197,14 @@
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  // autoplay every 10s; pause on hover
+  // Autoplay (10s), pause on hover
   let t=null, paused=false;
   function start(){ stop(); t=setInterval(()=>{ if(!paused) next(); }, 10000); }
   function stop(){ if(t) clearInterval(t); }
   viewport.addEventListener('mouseenter', ()=>paused=true);
   viewport.addEventListener('mouseleave', ()=>paused=false);
 
-  // basic swipe
+  // Touch swipe
   let sx=0, dx=0, touching=false;
   viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
   viewport.addEventListener('touchmove', e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
