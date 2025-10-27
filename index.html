@@ -1,267 +1,220 @@
-<!-- Reviews Carousel (arched bg #E8E1D5, 4-up desktop, arrows outside) -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Maxamy – Reviews</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
-
-<section class="reviews-wrap">
-  <div class="reviews-capsule">
-    <header class="reviews-head">
-      <h2 class="reviews-title">Our customers say it best</h2>
-      <p class="reviews-sub">Our rating tells the story better than we can</p>
-      <p class="reviews-meta"><strong>Excellent</strong> ★★★★★ — <strong>4.95</strong> based on <strong>328</strong> reviews</p>
-    </header>
-
-    <div class="reviews-shell" aria-label="Customer reviews carousel">
-      <button class="nav prev" aria-label="Previous reviews">‹</button>
-      <div class="viewport">
-        <ul class="track" id="reviews-track" aria-live="polite"></ul>
-      </div>
-      <button class="nav next" aria-label="Next reviews">›</button>
-    </div>
-
-    <footer class="reviews-foot">
-      <span class="brand">Google</span>
-      <span class="brand">ClickMechanic</span>
-    </footer>
-  </div>
-</section>
-
 <style>
   :root{
     --text:#1D1D1F;
-    --border:#E8E1D5;
-    --card:#FFFFFF;
-    --shadow:0 8px 24px rgba(0,0,0,.08);
+    --card:#fff;
+    --border:#E8E1D5;   /* capsule border */
+    --arch:#E8E1D5;     /* curved band colour */
+    --shadow:0 10px 28px rgba(0,0,0,.08);
+    --gap:24px;         /* space between cards */
     --radius:18px;
-    --gap:24px;
+    --sidepad:72px;     /* keeps arrows away from cards */
   }
 
-  /* Section with white top band + arched background behind */
-  .reviews-wrap{
-    position:relative;
-    padding:56px 16px 42px;
-    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    color:var(--text);
-    background:#fff;
-    overflow:visible;
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+
+  .wrap{max-width:1120px;margin:48px auto;padding:0 16px}
+  .capsule{
+    position:relative; overflow:hidden;
+    border:6px solid var(--border); border-radius:48px; background:#fff;
+    padding:36px 20px 22px;
   }
-  .reviews-wrap::before{
+  /* curved band inside capsule */
+  .capsule::before{
     content:"";
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    top:80px;                      /* white band above the arch */
-    width:100vw;
-    height:420px;
-    background:#E8E1D5;
-    border-bottom-left-radius:50% 100%;
-    border-bottom-right-radius:50% 100%;
-    z-index:-1;
+    position:absolute; inset:0; z-index:0;
+    /* big elliptical bulge that sits behind the cards */
+    background:
+      radial-gradient(160% 520px at 50% -140px,
+        var(--arch) 64%, transparent 65%);
   }
 
-  /* White capsule with border */
-  .reviews-capsule{
-    max-width:1120px;
-    margin:0 auto;
-    border:6px solid var(--border);
-    border-radius:48px;
-    padding:28px 20px 20px;
-    background:#fff;
-  }
+  header{position:relative; z-index:1; text-align:center; margin-bottom:16px}
+  h2{margin:0 0 6px; font:700 48px/1.1 Poppins,Inter,system-ui}
+  .sub{margin:0 0 8px; opacity:.85}
+  .meta{margin:0 0 6px}
+  .meta strong{font-weight:700}
 
-  .reviews-head{text-align:center;margin:0 0 12px}
-  .reviews-title{
-    margin:0 0 6px;
-    font:700 40px/1.1 Poppins, Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-    color:var(--text);
-  }
-  .reviews-sub{margin:0 0 8px;opacity:.85}
-  .reviews-meta{margin:0 0 10px}
-
-  /* Carousel shell */
-  .reviews-shell{
-    --navSpace:0px;               /* space reserved for arrows (changes by breakpoint) */
-    position:relative;
-  }
-  .viewport{
-    overflow:hidden;
-    border-radius:20px;
-    margin:0 var(--navSpace);     /* keeps arrows off the cards */
-  }
+  /* carousel shell */
+  .shell{position:relative; z-index:1; padding:0 var(--sidepad)}
+  .viewport{overflow:hidden; border-radius:22px}
   .track{
-    display:flex;
-    gap:var(--gap);
-    padding:0;                    /* IMPORTANT: no padding — makes 4-up fit perfectly */
-    margin:0;
-    list-style:none;
-    will-change:transform;
-    transition:transform .55s ease;
+    display:flex; gap:var(--gap); margin:0; padding:0; list-style:none;
+    will-change:transform; transition:transform .55s ease;
   }
 
-  /* Card */
-  .review{
-    background:var(--card);
-    border-radius:var(--radius);
-    box-shadow:var(--shadow);
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    min-width:calc(100% - 3*var(--gap));     /* 1 per view on mobile */
+  /* review card */
+  .card{
+    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:20px; display:flex; flex-direction:column; min-height:180px;
+    min-width:calc(100% - 3*var(--gap)); /* mobile: 1 per view */
   }
-  .r-top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .r-name{font-weight:700}
-  .r-stars{margin-left:auto;letter-spacing:.06em;white-space:nowrap}
-  .r-stars .full{color:#1D1D1F}
-  .r-stars .empty{color:#1D1D1F;opacity:.25}
-  .r-verify{display:flex;align-items:center;gap:6px;opacity:.9;font-size:13px}
-  .tick-ic{width:14px;height:14px;display:inline-block}
-  .tick-ic svg{width:14px;height:14px;display:block;fill:#1D1D1F}
-  .r-body{margin-top:8px;line-height:1.5}
+  .top{display:flex; align-items:center; gap:12px; margin-bottom:6px}
+  .name{font-weight:700}
+  .stars{margin-left:auto; letter-spacing:.06em}
+  .stars .full{color:#1D1D1F}
+  .stars .empty{color:#1D1D1F; opacity:.25}
+  .verify{display:flex; align-items:center; gap:6px; font-size:13px; opacity:.9}
+  .verify svg{width:14px;height:14px;display:block;fill:#1D1D1F}
+  .body{margin-top:8px; line-height:1.45}
 
-  /* Arrows (outside the card row) */
+  /* arrows – sit inside capsule edges, outside the cards */
   .nav{
-    position:absolute;top:50%;transform:translateY(-50%);
-    width:48px;height:48px;border-radius:50%;border:0;cursor:pointer;
-    background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.14);
-    font-size:28px;line-height:1;display:grid;place-items:center;color:#1D1D1F;
-    transition:transform .15s ease, box-shadow .15s ease;
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:46px; height:46px; border-radius:50%; border:0; cursor:pointer;
+    background:#fff; color:#1D1D1F;
+    box-shadow:0 8px 22px rgba(0,0,0,.16);
+    display:grid; place-items:center; font-size:28px; line-height:1;
+    transition:transform .16s ease, box-shadow .16s ease;
   }
-  .nav:hover{transform:translateY(-50%) scale(1.06);box-shadow:0 8px 22px rgba(0,0,0,.18)}
-  .prev{left:8px}
-  .next{right:8px}
+  .nav:hover{transform:translateY(-50%) scale(1.06)}
+  .prev{left:18px} .next{right:18px}
 
-  /* Footer brands */
-  .reviews-foot{
-    display:flex;justify-content:flex-end;gap:14px;margin-top:12px;padding:0 6px;
-  }
-  .brand{
-    font-weight:600;font-size:14px;border:1px solid #e5e7eb;border-radius:999px; padding:6px 10px;
-  }
+  /* footer brands */
+  .foot{position:relative; z-index:1; display:flex; gap:12px; justify-content:flex-end; padding:8px var(--sidepad) 0}
+  .brand{font-weight:600; font-size:14px; border:1px solid #e5e7eb; border-radius:999px; padding:6px 10px; background:#fff}
 
-  /* Responsive: 2-up tablet, 4-up desktop EXACTLY */
+  /* per-view widths */
   @media (min-width:640px){
-    .review{min-width:calc((100% - var(--gap)) / 2);}
-    .reviews-shell{--navSpace:56px;}
+    .card{min-width:calc((100% - var(--gap)) / 2);}     /* 2 per view */
   }
   @media (min-width:1024px){
-    .review{min-width:calc((100% - 3*var(--gap)) / 4);}
-    .reviews-shell{--navSpace:72px;}
-    .reviews-title{font-size:46px}
-    .nav{width:56px;height:56px}
+    .card{min-width:calc((100% - 3*var(--gap)) / 4);}   /* 4 per view – full, no half card */
   }
 </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="capsule" aria-label="Customer reviews">
+      <header>
+        <h2>Our customers say it best</h2>
+        <p class="sub">Our rating tells the story better than we can</p>
+        <p class="meta"><strong>Excellent</strong> ★★★★★ — <strong>4.95</strong> based on <strong>328</strong> reviews</p>
+      </header>
+
+      <div class="shell">
+        <button class="nav prev" aria-label="Previous">‹</button>
+        <div class="viewport">
+          <ul class="track" id="track"></ul>
+        </div>
+        <button class="nav next" aria-label="Next">›</button>
+      </div>
+
+      <div class="foot">
+        <span class="brand">Google</span>
+        <span class="brand">ClickMechanic</span>
+      </div>
+    </section>
+  </main>
 
 <script>
 (function(){
-  // Reviews (your exact content)
+  // ---- Data (your exact comments) ----
   const REVIEWS = [
-    {name:"Dan B.",        rating:5, text:"Super experienced. Turned up on time and did the job quickly and correctly."},
-    {name:"Michael A.",    rating:5, text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with."},
-    {name:"Eric W.",       rating:5, text:"All excellent. Delighted with the speed of service and MOT."},
-    {name:"Flow T.",       rating:5, text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!"},
-    {name:"Gabrielle L.",  rating:5, text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again."},
-    {name:"John J.",       rating:5, text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected."},
-    {name:"Adil S.",       rating:5, text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!"},
-    {name:"Irene K.",      rating:5, text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!"},
-    {name:"Andy R.",       rating:5, text:"Graeme arrived early and completed the service on my Captur in a polite, friendly and professional manner."},
-    {name:"Cheryl D.",     rating:5, text:"Work was carried out quickly and I did not even need to leave my home, highly recommended."},
-    {name:"Albert G.",     rating:5, text:"Graeme arrived at the beginning of the appointment window, worked quickly, and left the driveway as clean as when he arrived."},
-    {name:"Jay T.",        rating:5, text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices."}
+    {name:"Dan B.",        text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
+    {name:"Michael A.",    text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
+    {name:"Eric W.",       text:"All excellent. Delighted with the speed of service and MOT.", rating:5},
+    {name:"Flow T.",       text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!", rating:5},
+    {name:"Gabrielle L.",  text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again.", rating:5},
+    {name:"John J.",       text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected.", rating:5},
+    {name:"Adil S.",       text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!", rating:5},
+    {name:"Irene K.",      text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!", rating:5},
+    {name:"Andy R.",       text:"Graeme arrived early and completed the service on my Captur in a polite, friendly and professional manner.", rating:5},
+    {name:"Cheryl D.",     text:"Work was carried out quickly and I did not even need to leave my home, highly recommended.", rating:5},
+    {name:"Albert G.",     text:"Graeme arrived at the beginning of the appointment window, worked quickly, and left the driveway as clean as when he arrived.", rating:5},
+    {name:"Jay T.",        text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices.", rating:5}
   ];
 
-  const track = document.getElementById('reviews-track');
-  const prevBtn = document.querySelector('.reviews-shell .prev');
-  const nextBtn = document.querySelector('.reviews-shell .next');
-  const GAP = 24; // must match CSS --gap
+  const track = document.getElementById('track');
+  const prev  = document.querySelector('.prev');
+  const next  = document.querySelector('.next');
+  const viewport = document.querySelector('.viewport');
 
-  // Helpers
   function stars(n){
-    return `<span class="r-stars" aria-label="${n} out of 5 stars">
-              <span class="full">${'★'.repeat(n)}</span>
-              <span class="empty">${'★'.repeat(5-n)}</span>
+    return `<span class="stars" aria-label="${n} out of 5 stars">
+              <span class="full">${'★'.repeat(n)}</span><span class="empty">${'★'.repeat(5-n)}</span>
             </span>`;
   }
-  const tick = `<span class="tick-ic" aria-hidden="true">
-                  <svg viewBox="0 0 16 16"><path d="M8 1.25a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Zm-1 8.01L4.97 7.23l.99-.99L7 7.28 9.99 4.3l.99.99L7 9.26Z"/></svg>
-                </span>`;
+  const tick = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.25a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Zm-1 8.01L4.97 7.23l.99-.99L7 7.28 9.99 4.3l.99.99L7 9.26Z"/></svg>`;
 
-  function card({name, rating, text}){
-    return `<li class="review">
-      <div class="r-top">
-        <div class="r-name">${name}</div>
-        ${stars(rating)}
-      </div>
-      <div class="r-verify">${tick}<span>Verified Customer</span></div>
-      <div class="r-body">${text}</div>
+  function card({name,text,rating}){
+    return `<li class="card">
+      <div class="top"><div class="name">${name}</div>${stars(rating)}</div>
+      <div class="verify">${tick}<span>Verified Customer</span></div>
+      <div class="body">${text}</div>
     </li>`;
   }
-
-  // Build list
   track.innerHTML = REVIEWS.map(card).join('');
 
-  // Loop: clone head/tail up to max perView (4)
+  // ---- Infinite loop setup ----
   const perViewMax = 4;
-  const children = Array.from(track.children);
-  children.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
-  children.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
+  const originals = Array.from(track.children);
+  originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
+  originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
-  // State
   let index = perViewMax;
-  let cardW = 0, perView = 1, timer = null, isHovered=false, isFocused=false, isVisible=true;
+  let step = 0, gapPx = 0, perView = 1;
+  function recalc(){
+    const styles = getComputedStyle(track);
+    gapPx = parseFloat(styles.columnGap || styles.gap) || 0;
+    const firstReal = track.children[perViewMax];
+    if(!firstReal) return;
+    step = firstReal.offsetWidth + gapPx;
 
-  function calc(){
-    const ref = track.children[perViewMax];
-    if(!ref) return;
-    cardW = ref.getBoundingClientRect().width + GAP;
-    const vw = track.parentElement.getBoundingClientRect().width;
-    perView = vw >= 1024 ? 4 : vw >= 640 ? 2 : 1;
-    moveTo(index, false);
+    const vw = viewport.clientWidth;
+    perView = vw >= 1024 ? 4 : (vw >= 640 ? 2 : 1);
+
+    move(index, false);
   }
 
-  function moveTo(i, animate=true){
+  function move(i, animate=true){
     track.style.transition = animate ? 'transform .55s ease' : 'none';
-    track.style.transform = `translateX(${-(i*cardW - GAP)}px)`;
+    track.style.transform = `translateX(${-i * step}px)`;
     index = i;
   }
-  function next(){ moveTo(index+1, true); }
-  function prev(){ moveTo(index-1, true); }
+
+  function goNext(){ move(index+1, true); }
+  function goPrev(){ move(index-1, true); }
 
   track.addEventListener('transitionend', ()=>{
     const realStart = perViewMax;
-    const realEnd = realStart + REVIEWS.length - 1;
-    if (index > realEnd) moveTo(realStart + (index - realEnd - 1), false);
-    if (index < realStart) moveTo(realEnd - (realStart - index - 1), false);
+    const realEnd   = realStart + REVIEWS.length - 1;
+    if (index > realEnd) move(realStart + (index - realEnd - 1), false);
+    if (index < realStart) move(realEnd - (realStart - index - 1), false);
   });
 
-  // autoplay every 10s
-  function startAuto(){ stopAuto(); timer = setInterval(()=>{ if(!isHovered && !isFocused && isVisible) next(); }, 10000); }
-  function stopAuto(){ if(timer) clearInterval(timer); }
+  // autoplay (10s)
+  let timer=null, paused=false;
+  function start(){ stop(); timer=setInterval(()=>{ if(!paused) goNext(); }, 10000); }
+  function stop(){ if(timer) clearInterval(timer); }
 
-  // pause on hover/focus
-  track.parentElement.addEventListener('mouseenter', ()=>{isHovered=true;});
-  track.parentElement.addEventListener('mouseleave', ()=>{isHovered=false;});
-  track.parentElement.addEventListener('focusin', ()=>{isFocused=true;});
-  track.parentElement.addEventListener('focusout', ()=>{isFocused=false;});
-
-  // pause when not visible
-  const io = new IntersectionObserver((entries)=>{ isVisible = entries[0].isIntersecting; }, {threshold:.2});
-  io.observe(track.parentElement);
+  viewport.addEventListener('mouseenter', ()=>paused=true);
+  viewport.addEventListener('mouseleave', ()=>paused=false);
 
   // swipe
-  let startX=0, dx=0, touching=false;
-  track.parentElement.addEventListener('touchstart', e=>{ touching=true; startX=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
-  track.parentElement.addEventListener('touchmove', e=>{ if(!touching) return; dx=e.touches[0].clientX - startX; track.style.transform=`translateX(${-(index*cardW - GAP) - dx}px)`; }, {passive:true});
-  track.parentElement.addEventListener('touchend', ()=>{ touching=false; Math.abs(dx)>cardW*0.25 ? (dx<0?next():prev()) : moveTo(index,true); });
+  let sx=0, dx=0, touching=false;
+  viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
+  viewport.addEventListener('touchmove',  e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform = `translateX(${-index*step - dx}px)`; }, {passive:true});
+  viewport.addEventListener('touchend',   ()=>{ touching=false; Math.abs(dx)>step*0.25 ? (dx<0?goNext():goPrev()) : move(index,true); });
 
-  // arrows
-  prevBtn.addEventListener('click', prev);
-  nextBtn.addEventListener('click', next);
+  prev.addEventListener('click', goPrev);
+  next.addEventListener('click', goNext);
 
-  // init
-  window.addEventListener('resize', calc);
-  calc();
-  moveTo(index, false);
-  startAuto();
+  window.addEventListener('resize', recalc);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(recalc); } // avoids early mis-measure
+  recalc();
+  move(index, false);
+  start();
 })();
 </script>
-
+</body>
+</html>
