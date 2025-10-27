@@ -1,4 +1,4 @@
-<!-- Reviews Carousel (capsule border #E8E1D5) -->
+<!-- Reviews Carousel (arched bg #E8E1D5, 4-up desktop, arrows outside) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
@@ -35,105 +35,138 @@
     --radius:18px;
     --gap:24px;
   }
+
+  /* Section with white top band + arched background behind */
   .reviews-wrap{
-    color:var(--text);
-    padding:40px 16px;
-    background:transparent;
+    position:relative;
+    padding:56px 16px 42px;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    color:var(--text);
+    background:#fff;
+    overflow:visible;
   }
+  .reviews-wrap::before{
+    content:"";
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    top:80px;                      /* white band above the arch */
+    width:100vw;
+    height:420px;
+    background:#E8E1D5;
+    border-bottom-left-radius:50% 100%;
+    border-bottom-right-radius:50% 100%;
+    z-index:-1;
+  }
+
+  /* White capsule with border */
   .reviews-capsule{
     max-width:1120px;
     margin:0 auto;
     border:6px solid var(--border);
-    border-radius:48px;              /* arched / capsule border */
-    padding:32px 20px 20px;
+    border-radius:48px;
+    padding:28px 20px 20px;
     background:#fff;
   }
+
   .reviews-head{text-align:center;margin:0 0 12px}
   .reviews-title{
     margin:0 0 6px;
     font:700 40px/1.1 Poppins, Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     color:var(--text);
   }
-  .reviews-sub{
-    margin:0 0 8px;color:#1D1D1F;opacity:.8
-  }
-  .reviews-meta{
-    margin:0 0 10px;
-    color:#1D1D1F;
-  }
+  .reviews-sub{margin:0 0 8px;opacity:.85}
+  .reviews-meta{margin:0 0 10px}
 
-  .reviews-shell{position:relative}
-  .viewport{overflow:hidden;border-radius:20px}
+  /* Carousel shell */
+  .reviews-shell{
+    --navSpace:0px;               /* space reserved for arrows (changes by breakpoint) */
+    position:relative;
+  }
+  .viewport{
+    overflow:hidden;
+    border-radius:20px;
+    margin:0 var(--navSpace);     /* keeps arrows off the cards */
+  }
   .track{
-    display:flex;gap:var(--gap);padding:12px;margin:0;list-style:none;
-    will-change:transform;transition:transform .55s ease;
+    display:flex;
+    gap:var(--gap);
+    padding:0;                    /* IMPORTANT: no padding — makes 4-up fit perfectly */
+    margin:0;
+    list-style:none;
+    will-change:transform;
+    transition:transform .55s ease;
   }
 
   /* Card */
   .review{
-    min-width:calc(100% - 3*var(--gap));              /* 1 per view on mobile */
-    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:20px;display:flex;flex-direction:column;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    min-width:calc(100% - 3*var(--gap));     /* 1 per view on mobile */
   }
   .r-top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
   .r-name{font-weight:700}
-  .r-stars{margin-left:auto;letter-spacing:.06em}
-  .r-verify{display:flex;align-items:center;gap:6px;color:#1D1D1F;opacity:.85;font-size:13px}
-  .r-body{margin-top:8px;line-height:1.45}
-
-  /* Stars & tick use text color */
+  .r-stars{margin-left:auto;letter-spacing:.06em;white-space:nowrap}
   .r-stars .full{color:#1D1D1F}
   .r-stars .empty{color:#1D1D1F;opacity:.25}
-  .tick-ic{width:14px;height:14px;display:inline-block;vertical-align:middle}
+  .r-verify{display:flex;align-items:center;gap:6px;opacity:.9;font-size:13px}
+  .tick-ic{width:14px;height:14px;display:inline-block}
   .tick-ic svg{width:14px;height:14px;display:block;fill:#1D1D1F}
+  .r-body{margin-top:8px;line-height:1.5}
 
-  /* Arrows */
+  /* Arrows (outside the card row) */
   .nav{
     position:absolute;top:50%;transform:translateY(-50%);
-    width:42px;height:42px;border-radius:50%;border:0;cursor:pointer;
-    background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.12);font-size:28px;line-height:1;
-    display:grid;place-items:center;color:#1D1D1F;
+    width:48px;height:48px;border-radius:50%;border:0;cursor:pointer;
+    background:#fff;box-shadow:0 6px 18px rgba(0,0,0,.14);
+    font-size:28px;line-height:1;display:grid;place-items:center;color:#1D1D1F;
     transition:transform .15s ease, box-shadow .15s ease;
   }
-  .nav:hover{transform:translateY(-50%) scale(1.06);box-shadow:0 8px 22px rgba(0,0,0,.16)}
-  .prev{left:-10px}.next{right:-10px}
+  .nav:hover{transform:translateY(-50%) scale(1.06);box-shadow:0 8px 22px rgba(0,0,0,.18)}
+  .prev{left:8px}
+  .next{right:8px}
 
   /* Footer brands */
   .reviews-foot{
-    display:flex;justify-content:flex-end;gap:14px;margin-top:10px;padding:0 6px;
+    display:flex;justify-content:flex-end;gap:14px;margin-top:12px;padding:0 6px;
   }
   .brand{
     font-weight:600;font-size:14px;border:1px solid #e5e7eb;border-radius:999px; padding:6px 10px;
   }
 
-  /* Responsive counts */
+  /* Responsive: 2-up tablet, 4-up desktop EXACTLY */
   @media (min-width:640px){
-    .review{min-width:calc((100% - var(--gap)) / 2);}  /* 2 per view */
+    .review{min-width:calc((100% - var(--gap)) / 2);}
+    .reviews-shell{--navSpace:56px;}
   }
   @media (min-width:1024px){
-    .review{min-width:calc((100% - 3*var(--gap)) / 4);}/* 4 per view */
-    .prev{left:-18px}.next{right:-18px}
+    .review{min-width:calc((100% - 3*var(--gap)) / 4);}
+    .reviews-shell{--navSpace:72px;}
     .reviews-title{font-size:46px}
+    .nav{width:56px;height:56px}
   }
 </style>
 
 <script>
 (function(){
-  // ===== Reviews data (exact copy you provided) =====
+  // Reviews (your exact content)
   const REVIEWS = [
-    {name:"Dan B.", rating:5, text:"Super experienced. Turned up on time and did the job quickly and correctly."},
-    {name:"Michael A.", rating:5, text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with."},
-    {name:"Eric W.", rating:5, text:"All excellent. Delighted with the speed of service and MOT."},
-    {name:"Flow T.", rating:5, text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!"},
-    {name:"Gabrielle L.", rating:5, text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again."},
-    {name:"John J.", rating:5, text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected."},
-    {name:"Adil S.", rating:5, text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!"},
-    {name:"Irene K.", rating:5, text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!"},
-    {name:"Andy R.", rating:5, text:"Graeme arrived early and completed the service on my Captur in a polite, friendly and professional manner."},
-    {name:"Cheryl D.", rating:5, text:"Work was carried out quickly and I did not even need to leave my home, highly recommended."},
-    {name:"Albert G.", rating:5, text:"Graeme arrived at the beginning of the appointment window, worked quickly, and left the driveway as clean as when he arrived."},
-    {name:"Jay T.", rating:5, text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices."}
+    {name:"Dan B.",        rating:5, text:"Super experienced. Turned up on time and did the job quickly and correctly."},
+    {name:"Michael A.",    rating:5, text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with."},
+    {name:"Eric W.",       rating:5, text:"All excellent. Delighted with the speed of service and MOT."},
+    {name:"Flow T.",       rating:5, text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!"},
+    {name:"Gabrielle L.",  rating:5, text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again."},
+    {name:"John J.",       rating:5, text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected."},
+    {name:"Adil S.",       rating:5, text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!"},
+    {name:"Irene K.",      rating:5, text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!"},
+    {name:"Andy R.",       rating:5, text:"Graeme arrived early and completed the service on my Captur in a polite, friendly and professional manner."},
+    {name:"Cheryl D.",     rating:5, text:"Work was carried out quickly and I did not even need to leave my home, highly recommended."},
+    {name:"Albert G.",     rating:5, text:"Graeme arrived at the beginning of the appointment window, worked quickly, and left the driveway as clean as when he arrived."},
+    {name:"Jay T.",        rating:5, text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices."}
   ];
 
   const track = document.getElementById('reviews-track');
@@ -143,10 +176,9 @@
 
   // Helpers
   function stars(n){
-    const full = '★'.repeat(n);
-    const empty = '★'.repeat(5-n);
     return `<span class="r-stars" aria-label="${n} out of 5 stars">
-              <span class="full">${full}</span><span class="empty">${empty}</span>
+              <span class="full">${'★'.repeat(n)}</span>
+              <span class="empty">${'★'.repeat(5-n)}</span>
             </span>`;
   }
   const tick = `<span class="tick-ic" aria-hidden="true">
