@@ -3,122 +3,125 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Maxamy – Reviews</title>
+<title>Maxamy — Reviews</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+
 <style>
   :root{
     --text:#1D1D1F;
+    --wave:#E8E1D5;               /* the big arched background */
     --card:#fff;
-    --border:#E8E1D5;   /* capsule border */
-    --arch:#E8E1D5;     /* curved band colour */
-    --shadow:0 10px 28px rgba(0,0,0,.08);
-    --gap:24px;         /* space between cards */
-    --radius:18px;
-    --sidepad:72px;     /* keeps arrows away from cards */
+    --shadow:0 8px 22px rgba(0,0,0,.08);
+    --gap:24px;                   /* gap between cards */
+    --radius:16px;                /* smaller, like your A */
+    --sidepad:72px;               /* keeps arrows away from cards */
   }
 
   *{box-sizing:border-box}
   html,body{margin:0;background:#fff;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
 
-  .wrap{max-width:1120px;margin:48px auto;padding:0 16px}
-  .capsule{
-    position:relative; overflow:hidden;
-    border:6px solid var(--border); border-radius:48px; background:#fff;
-    padding:36px 20px 22px;
+  /* Section with the arched/wave background (full-bleed) */
+  .reviews{
+    position:relative;
+    padding:44px 0 14px;          /* compact vertical spacing (like A) */
+    overflow:hidden;
   }
-  /* curved band inside capsule */
-  .capsule::before{
+  .reviews::before{
+    /* Big ellipse that creates the “wave” behind content */
     content:"";
     position:absolute; inset:0; z-index:0;
-    /* big elliptical bulge that sits behind the cards */
     background:
       radial-gradient(160% 520px at 50% -140px,
-        var(--arch) 64%, transparent 65%);
+        var(--wave) 65%, transparent 66%);
+    pointer-events:none;
   }
 
-  header{position:relative; z-index:1; text-align:center; margin-bottom:16px}
-  h2{margin:0 0 6px; font:700 48px/1.1 Poppins,Inter,system-ui}
-  .sub{margin:0 0 8px; opacity:.85}
-  .meta{margin:0 0 6px}
-  .meta strong{font-weight:700}
+  /* Center content container */
+  .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
 
-  /* carousel shell */
-  .shell{position:relative; z-index:1; padding:0 var(--sidepad)}
-  .viewport{overflow:hidden; border-radius:22px}
+  header{text-align:center;margin:0 0 14px}
+  header h2{margin:0 0 6px;font:700 48px/1.1 Poppins,Inter,system-ui}
+  header .sub{margin:0 0 8px;opacity:.9}
+  header .meta{margin:0}
+  header .meta strong{font-weight:700}
+
+  /* Carousel */
+  .shell{position:relative;padding:0 var(--sidepad)}
+  .viewport{overflow:hidden;border-radius:20px}
   .track{
-    display:flex; gap:var(--gap); margin:0; padding:0; list-style:none;
-    will-change:transform; transition:transform .55s ease;
+    display:flex;gap:var(--gap);padding:0;margin:0;list-style:none;
+    will-change:transform;transition:transform .55s ease;
   }
 
-  /* review card */
+  /* Card (smaller radius/shadow like A) */
   .card{
-    background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:20px; display:flex; flex-direction:column; min-height:180px;
-    min-width:calc(100% - 3*var(--gap)); /* mobile: 1 per view */
+    background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+    padding:20px;display:flex;flex-direction:column;min-height:180px;
+    min-width:calc(100% - 3*var(--gap));  /* 1 per view (mobile) */
   }
-  .top{display:flex; align-items:center; gap:12px; margin-bottom:6px}
+  .top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
   .name{font-weight:700}
-  .stars{margin-left:auto; letter-spacing:.06em}
+  .stars{margin-left:auto;letter-spacing:.06em}
   .stars .full{color:#1D1D1F}
-  .stars .empty{color:#1D1D1F; opacity:.25}
-  .verify{display:flex; align-items:center; gap:6px; font-size:13px; opacity:.9}
+  .stars .empty{color:#1D1D1F;opacity:.25}
+  .verify{display:flex;align-items:center;gap:6px;font-size:13px;opacity:.9}
   .verify svg{width:14px;height:14px;display:block;fill:#1D1D1F}
-  .body{margin-top:8px; line-height:1.45}
+  .body{margin-top:8px;line-height:1.45}
 
-  /* arrows – sit inside capsule edges, outside the cards */
+  /* Arrows — outside the cards but inside the wave area */
   .nav{
-    position:absolute; top:50%; transform:translateY(-50%);
-    width:46px; height:46px; border-radius:50%; border:0; cursor:pointer;
-    background:#fff; color:#1D1D1F;
-    box-shadow:0 8px 22px rgba(0,0,0,.16);
-    display:grid; place-items:center; font-size:28px; line-height:1;
-    transition:transform .16s ease, box-shadow .16s ease;
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;
+    background:#fff;color:#1D1D1F;box-shadow:0 8px 22px rgba(0,0,0,.16);
+    display:grid;place-items:center;font-size:28px;line-height:1;
+    transition:transform .16s ease;
   }
   .nav:hover{transform:translateY(-50%) scale(1.06)}
-  .prev{left:18px} .next{right:18px}
+  .prev{left:18px}
+  .next{right:18px}
 
-  /* footer brands */
-  .foot{position:relative; z-index:1; display:flex; gap:12px; justify-content:flex-end; padding:8px var(--sidepad) 0}
-  .brand{font-weight:600; font-size:14px; border:1px solid #e5e7eb; border-radius:999px; padding:6px 10px; background:#fff}
+  /* Footer “brands” as plain text (not pills/links) */
+  .brands{display:flex;gap:10px;justify-content:flex-end;margin:10px var(--sidepad) 0 0}
+  .brands span{font-size:14px;opacity:.75;font-weight:600}
 
-  /* per-view widths */
+  /* Per-view widths */
   @media (min-width:640px){
     .card{min-width:calc((100% - var(--gap)) / 2);}     /* 2 per view */
   }
   @media (min-width:1024px){
-    .card{min-width:calc((100% - 3*var(--gap)) / 4);}   /* 4 per view – full, no half card */
+    .card{min-width:calc((100% - 3*var(--gap)) / 4);}   /* 4 per view */
+    header h2{font-size:54px}
   }
 </style>
 </head>
 <body>
-  <main class="wrap">
-    <section class="capsule" aria-label="Customer reviews">
-      <header>
-        <h2>Our customers say it best</h2>
-        <p class="sub">Our rating tells the story better than we can</p>
-        <p class="meta"><strong>Excellent</strong> ★★★★★ — <strong>4.95</strong> based on <strong>328</strong> reviews</p>
-      </header>
 
-      <div class="shell">
-        <button class="nav prev" aria-label="Previous">‹</button>
-        <div class="viewport">
-          <ul class="track" id="track"></ul>
-        </div>
-        <button class="nav next" aria-label="Next">›</button>
-      </div>
+<section class="reviews" aria-label="Customer reviews">
+  <div class="container">
+    <header>
+      <h2>Our customers say it best</h2>
+      <p class="sub">Our rating tells the story better than we can</p>
+      <p class="meta"><strong>Excellent</strong> ★★★★★ — <strong>4.95</strong> based on <strong>328</strong> reviews</p>
+    </header>
 
-      <div class="foot">
-        <span class="brand">Google</span>
-        <span class="brand">ClickMechanic</span>
+    <div class="shell">
+      <button class="nav prev" aria-label="Previous reviews">‹</button>
+      <div class="viewport">
+        <ul class="track" id="track" aria-live="polite"></ul>
       </div>
-    </section>
-  </main>
+      <button class="nav next" aria-label="Next reviews">›</button>
+    </div>
+
+    <div class="brands"><span>Google</span>·<span>ClickMechanic</span></div>
+  </div>
+</section>
 
 <script>
 (function(){
-  // ---- Data (your exact comments) ----
+  // --- Your reviews (unchanged) ---
   const REVIEWS = [
     {name:"Dan B.",        text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
     {name:"Michael A.",    text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
@@ -135,14 +138,16 @@
   ];
 
   const track = document.getElementById('track');
-  const prev  = document.querySelector('.prev');
-  const next  = document.querySelector('.next');
+  const prevBtn = document.querySelector('.prev');
+  const nextBtn = document.querySelector('.next');
   const viewport = document.querySelector('.viewport');
+  const GAP = 24; // must match CSS --gap
 
+  // helpers
   function stars(n){
     return `<span class="stars" aria-label="${n} out of 5 stars">
-              <span class="full">${'★'.repeat(n)}</span><span class="empty">${'★'.repeat(5-n)}</span>
-            </span>`;
+      <span class="full">${'★'.repeat(n)}</span><span class="empty">${'★'.repeat(5-n)}</span>
+    </span>`;
   }
   const tick = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.25a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Zm-1 8.01L4.97 7.23l.99-.99L7 7.28 9.99 4.3l.99.99L7 9.26Z"/></svg>`;
 
@@ -155,24 +160,20 @@
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  // ---- Infinite loop setup ----
+  // loop: clone head/tail (max perView = 4)
   const perViewMax = 4;
-  const originals = Array.from(track.children);
-  originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
-  originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
+  const kids = Array.from(track.children);
+  kids.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
+  kids.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
+  // state
   let index = perViewMax;
-  let step = 0, gapPx = 0, perView = 1;
+  let step = 0;
   function recalc(){
-    const styles = getComputedStyle(track);
-    gapPx = parseFloat(styles.columnGap || styles.gap) || 0;
-    const firstReal = track.children[perViewMax];
-    if(!firstReal) return;
-    step = firstReal.offsetWidth + gapPx;
-
-    const vw = viewport.clientWidth;
-    perView = vw >= 1024 ? 4 : (vw >= 640 ? 2 : 1);
-
+    const first = track.children[perViewMax];
+    if(!first) return;
+    // include gap in step
+    step = first.getBoundingClientRect().width + GAP;
     move(index, false);
   }
 
@@ -181,38 +182,37 @@
     track.style.transform = `translateX(${-i * step}px)`;
     index = i;
   }
-
-  function goNext(){ move(index+1, true); }
-  function goPrev(){ move(index-1, true); }
+  function next(){ move(index+1, true); }
+  function prev(){ move(index-1, true); }
 
   track.addEventListener('transitionend', ()=>{
-    const realStart = perViewMax;
-    const realEnd   = realStart + REVIEWS.length - 1;
-    if (index > realEnd) move(realStart + (index - realEnd - 1), false);
-    if (index < realStart) move(realEnd - (realStart - index - 1), false);
+    const start = perViewMax;
+    const end   = start + REVIEWS.length - 1;
+    if (index > end)  move(start + (index - end - 1), false);
+    if (index < start) move(end - (start - index - 1), false);
   });
 
-  // autoplay (10s)
-  let timer=null, paused=false;
-  function start(){ stop(); timer=setInterval(()=>{ if(!paused) goNext(); }, 10000); }
-  function stop(){ if(timer) clearInterval(timer); }
-
+  // autoplay every 10s; pause on hover
+  let t=null, paused=false;
+  function start(){ stop(); t=setInterval(()=>{ if(!paused) next(); }, 10000); }
+  function stop(){ if(t) clearInterval(t); }
   viewport.addEventListener('mouseenter', ()=>paused=true);
   viewport.addEventListener('mouseleave', ()=>paused=false);
 
-  // swipe
+  // basic swipe
   let sx=0, dx=0, touching=false;
   viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
-  viewport.addEventListener('touchmove',  e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform = `translateX(${-index*step - dx}px)`; }, {passive:true});
-  viewport.addEventListener('touchend',   ()=>{ touching=false; Math.abs(dx)>step*0.25 ? (dx<0?goNext():goPrev()) : move(index,true); });
+  viewport.addEventListener('touchmove', e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
+  viewport.addEventListener('touchend', ()=>{ touching=false; Math.abs(dx)>step*0.25 ? (dx<0?next():prev()) : move(index,true); });
 
-  prev.addEventListener('click', goPrev);
-  next.addEventListener('click', goNext);
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
 
   window.addEventListener('resize', recalc);
-  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(recalc); } // avoids early mis-measure
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(recalc);
+
   recalc();
-  move(index, false);
+  move(index,false);
   start();
 })();
 </script>
