@@ -3,180 +3,134 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Maxamy — Reviews</title>
+<title>Maxamy — Reviews (Arch Image)</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root{
     --text:#1D1D1F;
-    --wave:#E8E1D5;            /* beige area (bottom) */
     --card:#FFFFFF;
-    --gap:24px;                /* spacing between cards (≥640px) */
-    --radius:16px;
-    --sidepad:72px;            /* keeps arrows away from cards on desktop */
+    --gap:24px;           /* gap between cards (≥640px) */
+    --radius:18px;
+    --sidepad:72px;       /* keeps arrows away from cards on desktop */
   }
 
   *{box-sizing:border-box}
-  html,body{
-    margin:0;
-    background:#fff;
-    color:var(--text);
-    font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial
-  }
+  html,body{margin:0;background:transparent;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
 
-  /* ============ FULL-BLEED SECTION + ARCH ============ */
-  /* id gives us high specificity so site CSS won't override */
-  #mx-reviews{
+  /* ===== Section (transparent) ===== */
+  .reviews{
     position:relative;
-    overflow:hidden;                 /* never becomes its own scroll area */
-    width:100vw;                     /* break out of any page container */
-    margin-left:50%;
-    transform:translateX(-50%);      /* re-center the full-bleed band */
-    background:var(--wave);          /* beige lives underneath */
-    padding:72px 0 32px;             /* taller block (like reference) */
-    overscroll-behavior-y:contain;   /* avoid weird nested bounces */
-  }
-  /* White “sky” cut into the beige with a SHARP edge (no blur) */
-  #mx-reviews::before{
-    content:"";
-    position:absolute; inset:0; z-index:0;
-    /* Wider + deeper ellipse, centred; both stops equal -> crisp edge */
-    background:
-      radial-gradient(240% 840px at 50% -280px, #ffffff 58%, transparent 58%);
-    pointer-events:none;
+    overflow:hidden;                  /* no inner scroll */
+    padding:12px 0 10px;              /* tight vertical padding */
+    background:transparent;           /* you asked for fully transparent */
   }
 
-  /* ============ CONTENT ============ */
-  #mx-reviews .container{
-    max-width:1120px;
-    margin:0 auto;
-    padding:0 16px;
-    position:relative;
-    z-index:1; /* sits above the arch */
+  /* Background image for the arch (you supply). Sits behind cards. */
+  .bg{
+    position:absolute; inset:0;
+    z-index:0; pointer-events:none;   /* purely decorative */
+    display:flex; justify-content:center;
+  }
+  .bg img{
+    width:100%;
+    height:100%;
+    object-fit:cover;                 /* fills the section area */
+    object-position:center top;       /* adjust if your art needs a nudge */
   }
 
-  #mx-reviews header{ text-align:center; margin:0 0 16px }
-  #mx-reviews header h2{
-    margin:0 0 8px;
-    font:700 54px/1.1 Poppins,Inter,system-ui;
-  }
-  #mx-reviews header .sub{ margin:0 0 8px; opacity:.9 }
-  #mx-reviews header .meta{ margin:0 }
-  #mx-reviews header .meta strong{ font-weight:700 }
+  /* Content wrapper (width-limited) */
+  .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
 
-  /* ============ CAROUSEL ============ */
-  #mx-reviews .shell{ position:relative; padding:0 var(--sidepad) }
-  #mx-reviews .viewport{
-    overflow:hidden !important;      /* kill inner scroll */
-    border-radius:20px;
-    touch-action:pan-y;              /* vertical scroll passes through */
+  /* ===== Carousel ===== */
+  .shell{position:relative;padding:0 var(--sidepad)}
+  .viewport{
+    overflow:hidden;
+    border-radius:22px;
+    touch-action:pan-y;               /* vertical page scroll passes through */
   }
-  #mx-reviews .track{
-    display:flex;
-    gap:var(--gap);
-    padding:0;
-    margin:0;
-    list-style:none;
-    will-change:transform;
-    transition:transform .55s ease;
+  .track{
+    display:flex; gap:var(--gap);
+    padding:0; margin:0; list-style:none;
+    will-change:transform; transition:transform .55s ease;
   }
 
-  /* Card */
-  #mx-reviews .card{
+  /* Review card */
+  .card{
     background:var(--card);
     border-radius:var(--radius);
-    box-shadow:none;                 /* no shadows in the beige area */
-    padding:20px;
-    display:flex;
-    flex-direction:column;
-    min-height:180px;
-    /* desktop default is overridden below by media queries */
-    min-width:calc((100% - 3*var(--gap)) / 4);
+    box-shadow:none;                  /* no shadows in the beige area */
+    padding:22px; display:flex; flex-direction:column; min-height:180px;
+    min-width:calc((100% - 3*var(--gap)) / 4); /* default desktop (overridden below) */
   }
 
-  /* Title row keeps a fixed height so stars don't jump when names wrap */
-  #mx-reviews .top{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:6px;
-    min-height:28px;
+  .top{
+    display:flex; align-items:center; gap:12px; margin-bottom:8px;
+    min-height:28px;                  /* keeps heights aligned across cards */
   }
-  #mx-reviews .name{
-    font-weight:700;
-    flex:1 1 auto;
-    min-width:0;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;          /* long names won't push stars down */
+  .name{
+    font-weight:700; flex:1 1 auto; min-width:0;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  #mx-reviews .stars{
-    flex:0 0 auto;
-    width:6.6ch;                     /* keeps row alignment tight */
-    text-align:right;
-    letter-spacing:.06em;
-  }
-  #mx-reviews .stars .full{ color:#1D1D1F }
-  #mx-reviews .stars .empty{ color:#1D1D1F; opacity:.25 }
-  #mx-reviews .verify{ display:flex; align-items:center; gap:6px; font-size:13px; opacity:.9 }
-  #mx-reviews .verify svg{ width:14px; height:14px; display:block; fill:#1D1D1F }
-  #mx-reviews .body{ margin-top:8px; line-height:1.45 }
+  .stars{flex:0 0 auto; width:6.6ch; letter-spacing:.06em; text-align:right}
+  .stars .full{color:#1D1D1F}
+  .stars .empty{color:#1D1D1F; opacity:.25}
 
-  /* Arrows – outside the cards but inside the beige band */
-  #mx-reviews .nav{
+  .verify{display:flex; align-items:center; gap:6px; font-size:13px; opacity:.9}
+  .verify svg{width:14px; height:14px; display:block; fill:#1D1D1F}
+  .body{margin-top:8px; line-height:1.45}
+
+  /* Arrows */
+  .nav{
     position:absolute; top:50%; transform:translateY(-50%);
     width:46px; height:46px; border-radius:50%; border:0; cursor:pointer;
     background:#fff; color:#1D1D1F; box-shadow:0 8px 22px rgba(0,0,0,.16);
     display:grid; place-items:center; font-size:28px; line-height:1;
     transition:transform .16s ease;
   }
-  #mx-reviews .nav:hover{ transform:translateY(-50%) scale(1.06) }
-  #mx-reviews .prev{ left:18px }
-  #mx-reviews .next{ right:18px }
+  .nav:hover{transform:translateY(-50%) scale(1.06)}
+  .prev{left:18px}
+  .next{right:18px}
 
-  /* Brands as plain text, not pills/links */
-  #mx-reviews .brands{
-    display:flex; gap:10px; justify-content:flex-end;
-    margin:12px var(--sidepad) 0 0;
-  }
-  #mx-reviews .brands span{ font-size:14px; opacity:.75; font-weight:600 }
+  /* Footer brands (remove if you don’t want them) */
+  .brands{display:flex; gap:10px; justify-content:flex-end; margin:10px var(--sidepad) 0 0}
+  .brands span{font-size:14px; opacity:.75; font-weight:600}
 
-  /* ============ RESPONSIVE ============ */
-
-  /* MOBILE — exactly ONE card, no peeking, comfy arrows */
+  /* ===== Responsive per-view widths ===== */
+  /* Mobile — exactly ONE card, no peeking/scroll traps */
   @media (max-width:639.98px){
-    #mx-reviews header h2{ font-size:42px }
-    #mx-reviews .shell{ padding:0 16px }             /* bring arrows in */
-    #mx-reviews .track{ gap:0 !important }           /* no gap -> no half card */
-    #mx-reviews .card{ min-width:100% !important }   /* 1 per view */
-    #mx-reviews .prev{ left:8px }                     /* tighter arrow pos */
-    #mx-reviews .next{ right:8px }
+    .shell{padding:0 18px}
+    .track{gap:0}
+    .card{min-width:100%}
+    .prev{left:8px} .next{right:8px}
+    .brands{margin:8px 18px 0 0}
   }
 
-  /* TABLET — two cards */
+  /* Tablet — TWO cards */
   @media (min-width:640px) and (max-width:1023.98px){
-    #mx-reviews .card{ min-width:calc((100% - var(--gap)) / 2) }
+    .card{min-width:calc((100% - var(--gap)) / 2)}
+    .shell{padding:0 36px}
+    .brands{margin:10px 36px 0 0}
   }
 
-  /* DESKTOP — four cards */
+  /* Desktop — FOUR cards */
   @media (min-width:1024px){
-    #mx-reviews .card{ min-width:calc((100% - 3*var(--gap)) / 4) }
+    .card{min-width:calc((100% - 3*var(--gap)) / 4)}
   }
 </style>
 </head>
 <body>
 
-<section id="mx-reviews" aria-label="Customer reviews">
-  <div class="container">
-    <header>
-      <h2>Our customers say it best</h2>
-      <p class="sub">Our rating tells the story better than we can</p>
-      <p class="meta"><strong>Excellent</strong> ★★★★★ — <strong>4.95</strong> based on <strong>328</strong> reviews</p>
-    </header>
+<section class="reviews" aria-label="Customer reviews">
+  <!-- Arch background image (replace the src with your PNG/SVG) -->
+  <div class="bg" aria-hidden="true">
+    <img id="arch-bg" src="arch-placeholder.png" alt="">
+  </div>
 
+  <div class="container">
     <div class="shell">
       <button class="nav prev" aria-label="Previous reviews">‹</button>
       <div class="viewport">
@@ -191,26 +145,26 @@
 
 <script>
 (function(){
-  /* ===== Reviews data ===== */
+  // ===== Reviews data (your copy) =====
   const REVIEWS = [
-    {name:"Dan B.",        text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
-    {name:"Michael A.",    text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
-    {name:"Eric W.",       text:"All excellent. Delighted with the speed of service and MOT.", rating:5},
-    {name:"Flow T.",       text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!", rating:5},
-    {name:"Gabrielle L.",  text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again.", rating:5},
-    {name:"John J.",       text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected.", rating:5},
-    {name:"Adil S.",       text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!", rating:5},
-    {name:"Irene K.",      text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!", rating:5},
-    {name:"Andy R.",       text:"Graeme arrived early and completed the service on my Captur in a polite, friendly and professional manner.", rating:5},
-    {name:"Cheryl D.",     text:"Work was carried out quickly and I did not even need to leave my home, highly recommended.", rating:5},
-    {name:"Albert G.",     text:"Graeme arrived at the beginning of the appointment window, worked quickly, and left the driveway as clean as when he arrived.", rating:5},
-    {name:"Jay T.",        text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices.", rating:5}
+    {name:"Dan B.",        rating:5, text:"Super experienced. Turned up on time and did the job quickly and correctly."},
+    {name:"Michael A.",    rating:5, text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with."},
+    {name:"Eric W.",       rating:5, text:"All excellent. Delighted with the speed of service and MOT."},
+    {name:"Flow T.",       rating:5, text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!"},
+    {name:"Gabrielle L.",  rating:5, text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again."},
+    {name:"John J.",       rating:5, text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected."},
+    {name:"Adil S.",       rating:5, text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!"},
+    {name:"Irene K.",      rating:5, text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!"},
+    {name:"Andy R.",       rating:5, text:"Graeme arrived early and completed the service on my Captur in a polite, friendly and professional manner."},
+    {name:"Cheryl D.",     rating:5, text:"Work was carried out quickly and I did not even need to leave my home, highly recommended."},
+    {name:"Albert G.",     rating:5, text:"Graeme arrived at the beginning of the appointment window, worked quickly, and left the driveway as clean as when he arrived."},
+    {name:"Jay T.",        rating:5, text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices."}
   ];
 
-  const track    = document.getElementById('track');
-  const prevBtn  = document.querySelector('#mx-reviews .prev');
-  const nextBtn  = document.querySelector('#mx-reviews .next');
-  const viewport = document.querySelector('#mx-reviews .viewport');
+  const track   = document.getElementById('track');
+  const prevBtn = document.querySelector('.prev');
+  const nextBtn = document.querySelector('.next');
+  const viewport= document.querySelector('.viewport');
 
   /* Helpers */
   function stars(n){
@@ -220,7 +174,7 @@
   }
   const tick = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.25a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Zm-1 8.01L4.97 7.23l.99-.99L7 7.28 9.99 4.3l.99.99L7 9.26Z"/></svg>`;
 
-  function card({name,text,rating}){
+  function card({name, text, rating}){
     return `<li class="card">
       <div class="top"><div class="name">${name}</div>${stars(rating)}</div>
       <div class="verify">${tick}<span>Verified Customer</span></div>
@@ -229,34 +183,31 @@
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  /* ===== Infinite loop setup ===== */
+  // ===== Infinite-loop setup =====
   const perViewMax = 4;
-  const originals  = Array.from(track.children);
+  const originals = Array.from(track.children);
   originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
   originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
-  /* ===== Sizing / movement ===== */
+  // ===== Sizing & movement =====
   let index = perViewMax;
-  let step  = 0; // distance per move (card width + gap)
+  let step  = 0;                                // distance per slide
 
   function currentGap(){
     const s = getComputedStyle(track);
     return parseFloat(s.columnGap || s.gap) || 0;
   }
-
   function recalc(){
     const firstReal = track.children[perViewMax];
     if(!firstReal) return;
     step = firstReal.getBoundingClientRect().width + currentGap();
     move(index,false);
   }
-
   function move(i, animate=true){
     track.style.transition = animate ? 'transform .55s ease' : 'none';
     track.style.transform  = `translateX(${-i * step}px)`;
     index = i;
   }
-
   function next(){ move(index+1, true); }
   function prev(){ move(index-1, true); }
 
@@ -267,10 +218,10 @@
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  /* Autoplay every 10s; pause on hover & when off-screen */
-  let t=null, paused=false, visible=true;
-  function start(){ stop(); t=setInterval(()=>{ if(!paused && visible) next(); }, 10000); }
-  function stop(){ if(t) clearInterval(t); }
+  // Autoplay (10s). Pause on hover + when off-screen.
+  let timer=null, paused=false, visible=true;
+  function start(){ stop(); timer=setInterval(()=>{ if(!paused && visible) next(); }, 10000); }
+  function stop(){ if(timer) clearInterval(timer); }
 
   viewport.addEventListener('mouseenter', ()=>paused=true);
   viewport.addEventListener('mouseleave', ()=>paused=false);
@@ -278,7 +229,7 @@
   const io = new IntersectionObserver((entries)=>{ visible = entries[0].isIntersecting; }, {threshold:.2});
   io.observe(viewport);
 
-  /* Swipe */
+  // Swipe
   let sx=0, dx=0, touching=false;
   viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
   viewport.addEventListener('touchmove',  e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
