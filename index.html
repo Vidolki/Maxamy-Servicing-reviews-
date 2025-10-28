@@ -48,11 +48,12 @@
   /* ===== Carousel ===== */
   .shell{position:relative; padding:0 var(--sidepad)}
   .viewport{
-    overflow:hidden;            /* kills inner scrolling */
-    touch-action:pan-y;         /* allow page to scroll vertically */
-    border-radius:20px;
-    margin:0;                   /* no extra bottom space */
-  }
+  overflow:hidden;
+  touch-action: pan-x;          /* allow horizontal, block vertical */
+  overscroll-behavior: contain; /* stop rubber-band/scroll chaining on iOS */
+  border-radius:20px;
+  margin:0;
+}
   .track{
     display:flex;
     gap:var(--gap);
