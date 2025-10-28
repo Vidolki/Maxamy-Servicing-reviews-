@@ -1,12 +1,10 @@
 <section class="reviews" aria-label="Customer reviews">
-  <!-- BACKGROUND ARCH IMAGE (transparent PNG/SVG). 
-       Use an absolute URL. It will auto-remove if it fails. -->
+  <!-- Optional arch background. Delete this <img> for pure transparency. -->
   <img
     class="bg"
     src="https://YOUR-CDN.example.com/arch-beige-bottom.svg"
     alt=""
     aria-hidden="true"
-    loading="eager"
     onerror="this.remove()"
   />
 
@@ -19,7 +17,7 @@
       <button class="nav next" aria-label="Next reviews">›</button>
     </div>
 
-    <div class="brands"><span>Google</span>·<span>ClickMechanic</span></div>
+    <div class="brands"><span>Google</span> · <span>ClickMechanic</span></div>
   </div>
 </section>
 
@@ -31,24 +29,25 @@
     --radius:16px;
     --sidepad:72px;
   }
+  *{box-sizing:border-box}
 
-  /* ——— Hard kill any host borders/backgrounds/shadows ——— */
+  /* Hard-kill any host frame/shadow/background */
   .reviews, .reviews *{
-    background: transparent !important;
-    border: 0 !important;
-    outline: 0 !important;
-    box-shadow: none !important;
+    background:transparent !important;
+    border:0 !important;
+    outline:0 !important;
+    box-shadow:none !important;
   }
 
   .reviews{
     position:relative;
-    overflow:hidden;       /* no inner scroll on mobile */
-    padding:18px 0 10px;   /* tight top/bottom as requested */
+    overflow:hidden;             /* no inner scroll trapping */
+    padding:18px 0 10px;         /* compact top/bottom like your ref */
     color:var(--text);
     font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
   }
 
-  /* Arch image fills the section, sits behind everything */
+  /* Optional arch image behind content */
   .reviews > .bg{
     position:absolute; inset:0;
     width:100%; height:100%;
@@ -60,13 +59,17 @@
 
   .shell{position:relative;padding:0 var(--sidepad)}
   .viewport{overflow:hidden;border-radius:20px;touch-action:pan-y}
-  .track{display:flex;gap:var(--gap);padding:0;margin:0;list-style:none;transition:transform .55s ease}
+  .track{display:flex;gap:var(--gap);margin:0;padding:0;list-style:none;transition:transform .55s ease}
 
+  /* Card */
   .card{
     background:var(--card);
     border-radius:var(--radius);
-    padding:20px;display:flex;flex-direction:column;min-height:180px;
-    min-width:calc((100% - 3*var(--gap)) / 4);
+    padding:20px;
+    display:flex;flex-direction:column;
+    min-height:180px;
+    /* width is set per-breakpoint below via flex-basis */
+    flex:0 0 auto;
   }
   .top{display:flex;align-items:center;gap:12px;margin-bottom:6px;min-height:28px}
   .name{font-weight:700;flex:1 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -82,42 +85,47 @@
     background:#fff !important;color:#1D1D1F !important;
     display:grid;place-items:center;font-size:28px;line-height:1;
   }
-  .prev{left:18px}.next{right:18px}
+  .prev{left:18px}
+  .next{right:18px}
 
   .brands{display:flex;gap:10px;justify-content:flex-end;margin:10px var(--sidepad) 0 0}
   .brands span{font-size:14px;opacity:.75;font-weight:600}
 
-  /* Mobile: exactly 1 card, no peek */
+  /* —— Responsive widths locked with flex-basis —— */
+
+  /* Mobile: EXACTLY 1 card, no peeking */
   @media (max-width:639.98px){
     .track{gap:0}
-    .card{min-width:100%}
+    .card{flex:0 0 100%}
   }
-  /* Tablet: 2 cards */
+
+  /* Tablet: EXACTLY 2 cards */
   @media (min-width:640px) and (max-width:1023.98px){
-    .card{min-width:calc((100% - var(--gap)) / 2)}
+    .track{gap:var(--gap)}
+    .card{flex:0 0 calc((100% - var(--gap)) / 2)}
   }
-  /* Desktop: 4 cards */
+
+  /* Desktop: EXACTLY 4 cards */
   @media (min-width:1024px){
-    .card{min-width:calc((100% - 3*var(--gap)) / 4)}
+    .track{gap:var(--gap)}
+    .card{flex:0 0 calc((100% - 3*var(--gap)) / 4)}
   }
 </style>
 
 <script>
 (function(){
   const REVIEWS = [
-    {name:"Jay T.", text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices.", rating:5},
-    {name:"Dan B.", text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
     {name:"Michael A.", text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
     {name:"Eric W.", text:"All excellent. Delighted with the speed of service and MOT.", rating:5},
     {name:"Flow T.", text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!", rating:5},
-    {name:"Gabrielle L.", text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again.", rating:5},
-    {name:"John J.", text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected.", rating:5},
-    {name:"Adil S.", text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!", rating:5}
+    {name:"Gabrielle L.", text:"Very happy. Great price for the work, much better than bigger name brand use again.", rating:5},
+    {name:"Jay T.", text:"Great friendly service. I’ve been using Maxamy for nearly 11 years now. Very competitive prices.", rating:5},
+    {name:"Dan B.", text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5}
   ];
 
-  const track = document.getElementById('track');
-  const prev  = document.querySelector('.prev');
-  const next  = document.querySelector('.next');
+  const track  = document.getElementById('track');
+  const prev   = document.querySelector('.prev');
+  const next   = document.querySelector('.next');
   const viewport = document.querySelector('.viewport');
 
   function stars(n){
@@ -136,37 +144,53 @@
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  // loop clones
+  // Clone ends for seamless loop
   const perViewMax = 4;
-  const kids = Array.from(track.children);
-  kids.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
-  kids.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
+  const originals = Array.from(track.children);
+  originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
+  originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
   let index = perViewMax, step = 0;
-  function gap(){ const s=getComputedStyle(track); return parseFloat(s.columnGap||s.gap)||0; }
-  function recalc(){ const ref = track.children[perViewMax]; if(!ref) return; step = ref.getBoundingClientRect().width + gap(); move(index,false); }
-  function move(i, anim=true){ track.style.transition = anim? 'transform .55s ease':'none'; track.style.transform = `translateX(${-i*step}px)`; index=i; }
-  function nextFn(){ move(index+1,true); }
-  function prevFn(){ move(index-1,true); }
+
+  function currentGap(){
+    const s = getComputedStyle(track);
+    return parseFloat(s.columnGap || s.gap) || 0;
+  }
+  function recalc(){
+    const ref = track.children[perViewMax];
+    if(!ref) return;
+    step = ref.getBoundingClientRect().width + currentGap(); // exact card width + gap
+    move(index,false);
+  }
+  function move(i, animate=true){
+    track.style.transition = animate ? 'transform .55s ease' : 'none';
+    track.style.transform = `translateX(${-i * step}px)`;
+    index = i;
+  }
+
+  function goNext(){ move(index+1,true); }
+  function goPrev(){ move(index-1,true); }
 
   track.addEventListener('transitionend', ()=>{
-    const start = perViewMax, end = start + kids.length - 1;
+    const start = perViewMax;
+    const end   = start + originals.length - 1;
     if (index > end) move(start + (index - end - 1), false);
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  // no inner scroll trapping
-  viewport.addEventListener('touchstart', e=>{ track.style.transition='none'; }, {passive:true});
+  // Touch swipe (no scroll trap)
   let sx=0, dx=0, touching=false;
-  viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; }, {passive:true});
-  viewport.addEventListener('touchmove',  e=>{ if(!touching) return; dx=e.touches[0].clientX-sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
-  viewport.addEventListener('touchend',   ()=>{ touching=false; Math.abs(dx)>step*0.25 ? (dx<0?nextFn():prevFn()) : move(index,true); });
+  viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
+  viewport.addEventListener('touchmove',  e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
+  viewport.addEventListener('touchend',   ()=>{ touching=false; Math.abs(dx)>step*0.25 ? (dx<0?goNext():goPrev()) : move(index,true); });
 
-  prev.addEventListener('click', prevFn);
-  next.addEventListener('click', nextFn);
+  prev.addEventListener('click', goPrev);
+  next.addEventListener('click', goNext);
 
   window.addEventListener('resize', recalc);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(recalc);
-  recalc(); move(index,false);
+
+  recalc();
+  move(index,false);
 })();
 </script>
