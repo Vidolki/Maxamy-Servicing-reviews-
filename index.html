@@ -12,125 +12,86 @@
 <style>
   :root{
     --text:#1D1D1F;
-    --card:#FFFFFF;
-    --gap:24px;           /* space between cards (tablet/desktop) */
+    --card:#FFFFFF;             /* white review cards */
+    --gap:24px;                 /* desktop/tablet card gap */
     --radius:16px;
-    --sidepad:72px;       /* keeps arrows away from cards (tablet/desktop) */
+    --sidepad:72px;             /* arrow inset */
   }
 
-  /* Base */
   *{box-sizing:border-box}
-  html,body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;color:var(--text);background:transparent}
+  html,body{margin:0;background:transparent;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
 
-  /* === Reviews block (transparent) === */
+  /* ===== Section ===== */
   .reviews{
-    background:transparent !important;
-    padding:12px 0 10px;        /* compact vertical breathing room */
-  }
-  .container{
-    background:transparent !important;
-    max-width:1120px;
-    margin:0 auto;
-    padding:0 16px;
-  }
-
-  /* Shell / viewport */
-  .shell{
+    background:transparent;     /* fully transparent section */
+    padding:18px 0;             /* tight top/bottom, per your screenshot */
+    overflow:hidden;            /* no inner scroll capture */
     position:relative;
-    padding:0 var(--sidepad);
-    background:transparent !important;
   }
+
+  .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+
+  /* ===== Carousel ===== */
+  .shell{position:relative;padding:0 var(--sidepad)}
   .viewport{
-    background:transparent !important;
-    overflow:hidden;            /* no inner scroll */
-    border-radius:20px;
-    touch-action:pan-y;         /* allow page scroll */
+    overflow:hidden;            /* kills inner scrolling */
+    touch-action:pan-y;         /* let the page scroll vertically */
+    border-radius:20px;         /* soft clipping at edges */
   }
-
-  /* Track and cards */
   .track{
-    display:flex;
-    gap:var(--gap);
-    padding:0;
-    margin:0;
-    list-style:none;
-    will-change:transform;
-    transition:transform .55s ease;
-    background:transparent !important;
+    display:flex; gap:var(--gap);
+    margin:0; padding:0; list-style:none;
+    will-change:transform; transition:transform .55s ease;
   }
+
+  /* ===== Cards ===== */
   .card{
-    background:#fff;            /* white cards */
+    background:var(--card);
     border-radius:var(--radius);
-    box-shadow:none;            /* no shadow as requested */
+    box-shadow:0 10px 24px rgba(0,0,0,.06);   /* subtle; remove if you want perfectly flat */
     padding:20px;
-    display:flex;
-    flex-direction:column;
-    min-height:180px;
-    min-width:calc((100% - 3*var(--gap)) / 4); /* default: desktop 4 per view */
+    display:flex; flex-direction:column; min-height:180px;
+    min-width:calc((100% - 3*var(--gap)) / 4); /* desktop default – overridden below */
   }
 
-  .top{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:6px;
-    min-height:28px;            /* keeps verification row aligned */
-  }
-  .name{
-    font-weight:700;
-    flex:1 1 auto;
-    min-width:0;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;     /* long names won't push stars down */
-  }
-  .stars{
-    flex:0 0 auto;
-    width:6.6ch;                /* keeps width stable for 5 stars */
-    text-align:right;
-    letter-spacing:.06em;
-  }
+  .top{display:flex; align-items:center; gap:12px; margin-bottom:6px; min-height:28px}
+  .name{font-weight:700; flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .stars{flex:0 0 auto; width:6.6ch; text-align:right; letter-spacing:.06em}
   .stars .full{color:#1D1D1F}
-  .stars .empty{color:#1D1D1F;opacity:.25}
+  .stars .empty{color:#1D1D1F; opacity:.25}
+  .verify{display:flex; align-items:center; gap:6px; font-size:13px; opacity:.9}
+  .verify svg{width:14px; height:14px; display:block; fill:#1D1D1F}
+  .body{margin-top:8px; line-height:1.45}
 
-  .verify{display:flex;align-items:center;gap:6px;font-size:13px;opacity:.9}
-  .verify svg{width:14px;height:14px;display:block;fill:#1D1D1F}
-  .body{margin-top:8px;line-height:1.45}
-
-  /* Arrows (simple, minimal) */
+  /* ===== Arrows ===== */
   .nav{
-    position:absolute;top:50%;transform:translateY(-50%);
-    width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;
-    background:#fff;color:#1D1D1F;
-    display:grid;place-items:center;font-size:28px;line-height:1;
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:46px; height:46px; border-radius:50%; border:0; cursor:pointer;
+    background:#fff; color:#1D1D1F; box-shadow:0 8px 22px rgba(0,0,0,.16);
+    display:grid; place-items:center; font-size:28px; line-height:1;
+    transition:transform .16s ease;
   }
-  .prev{left:18px}
-  .next{right:18px}
+  .nav:hover{transform:translateY(-50%) scale(1.06)}
+  .prev{left:18px} .next{right:18px}
 
-  /* Footer brands (plain text, not pills) */
-  .brands{
-    display:flex;gap:10px;justify-content:flex-end;
-    margin:10px var(--sidepad) 0 0;
-    background:transparent !important;
-  }
-  .brands span{font-size:14px;opacity:.75;font-weight:600}
+  /* ===== Footer brands ===== */
+  .brands{display:flex; gap:10px; justify-content:flex-end; margin:12px var(--sidepad) 0 0}
+  .brands span{font-size:14px; opacity:.75; font-weight:600}
 
-  /* ===== Responsive widths ===== */
+  /* ===== Responsive: exact cards per view ===== */
 
-  /* Mobile — exactly ONE card, no peeking */
+  /* Mobile — 1 card, zero gap so nothing peeks in */
   @media (max-width:639.98px){
-    .shell{padding:0 16px}      /* lighter side padding on mobile */
-    .track{gap:0}               /* avoid half-card peek */
-    .card{min-width:100%}       /* 1 per view */
-    .nav{display:none}          /* optional: hide arrows on small screens */
+    .track{gap:0}
+    .card{min-width:100%}                 /* exactly one card */
   }
 
-  /* Tablet — TWO cards */
+  /* Tablet — 2 cards */
   @media (min-width:640px) and (max-width:1023.98px){
     .card{min-width:calc((100% - var(--gap)) / 2)}
   }
 
-  /* Desktop — FOUR cards */
+  /* Desktop — 4 cards */
   @media (min-width:1024px){
     .card{min-width:calc((100% - 3*var(--gap)) / 4)}
   }
@@ -154,20 +115,16 @@
 
 <script>
 (function(){
-  // ===== Reviews data =====
+  // ===== Data =====
   const REVIEWS = [
-    {name:"Dan B.",        text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
-    {name:"Michael A.",    text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
-    {name:"Eric W.",       text:"All excellent. Delighted with the speed of service and MOT.", rating:5},
-    {name:"Flow T.",       text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!", rating:5},
-    {name:"Gabrielle L.",  text:"Very happy. Great price for the work, much better than bigger name brands. Will definitely use again.", rating:5},
-    {name:"John J.",       text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected.", rating:5},
-    {name:"Adil S.",       text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!", rating:5},
-    {name:"Irene K.",      text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!", rating:5},
-    {name:"Andy R.",       text:"Graeme arrived early and completed the service on my Captur in a polite, friendly and professional manner.", rating:5},
-    {name:"Cheryl D.",     text:"Work was carried out quickly and I did not even need to leave my home, highly recommended.", rating:5},
-    {name:"Albert G.",     text:"Graeme arrived at the beginning of the appointment window, worked quickly, and left the driveway as clean as when he arrived.", rating:5},
-    {name:"Jay T.",        text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices.", rating:5}
+    {name:"Michael A.",  text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
+    {name:"Eric W.",     text:"All excellent. Delighted with the speed of service and MOT.", rating:5},
+    {name:"Flow T.",     text:"Helped me out multiple times when my car’s been trouble, would 100% recommend to anyone!!", rating:5},
+    {name:"Gabrielle L.",text:"Very happy. Great price for the work, much better than bigger name brand use again.", rating:5},
+    {name:"Dan B.",      text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
+    {name:"John J.",     text:"Just like DHL: excellence simply delivered! Arrived on time, did the job, just as I expected.", rating:5},
+    {name:"Adil S.",     text:"It’s the second time I’m using Graeme for my cars and he’s been amazing! My go-to mechanic for servicing & MOT!", rating:5},
+    {name:"Irene K.",    text:"It’s great to be able to trust someone to do an excellent job at a reasonable price. It’s an added bonus that I don’t have to drive to a garage!", rating:5},
   ];
 
   const track   = document.getElementById('track');
@@ -175,7 +132,6 @@
   const nextBtn = document.querySelector('.next');
   const viewport= document.querySelector('.viewport');
 
-  /* Helpers */
   function stars(n){
     return `<span class="stars" aria-label="${n} out of 5 stars">
               <span class="full">${'★'.repeat(n)}</span><span class="empty">${'★'.repeat(5-n)}</span>
@@ -192,26 +148,28 @@
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  // ===== Infinite loop setup =====
-  const perViewMax = 4; // largest layout
+  // ===== Infinite loop scaffolding =====
+  const perViewMax = 4; // we clone this many on each side
   const originals = Array.from(track.children);
   originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
   originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
-  // ===== Sizing / movement =====
   let index = perViewMax;
   let step  = 0;
 
   function currentGap(){
     const s = getComputedStyle(track);
-    return parseFloat(s.columnGap || s.gap) || 0;
+    return parseFloat(s.columnGap || s.gap) || 0;  // 0 on mobile
   }
+
   function recalc(){
-    const firstReal = track.children[perViewMax];
-    if(!firstReal) return;
-    step = firstReal.getBoundingClientRect().width + currentGap();
+    // Use the first real card for exact width
+    const first = track.children[perViewMax];
+    if(!first) return;
+    step = first.getBoundingClientRect().width + currentGap();
     move(index,false);
   }
+
   function move(i, animate=true){
     track.style.transition = animate ? 'transform .55s ease' : 'none';
     track.style.transform  = `translateX(${-i * step}px)`;
@@ -228,15 +186,13 @@
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  // Autoplay (pause when not visible or hovered)
+  // Autoplay (optional; easy to remove)
   let t=null, paused=false, visible=true;
   function start(){ stop(); t=setInterval(()=>{ if(!paused && visible) next(); }, 10000); }
   function stop(){ if(t) clearInterval(t); }
-
   viewport.addEventListener('mouseenter', ()=>paused=true);
   viewport.addEventListener('mouseleave', ()=>paused=false);
-
-  const io = new IntersectionObserver(e => { visible = e[0].isIntersecting; }, {threshold:.2});
+  const io = new IntersectionObserver((e)=>{ visible = e[0].isIntersecting; }, {threshold:.2});
   io.observe(viewport);
 
   // Touch swipe
