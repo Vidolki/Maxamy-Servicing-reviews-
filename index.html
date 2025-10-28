@@ -2,287 +2,155 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Reviews Section</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Maxamy — Reviews</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@700&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    /* 🔧 Tweak these to match your brand (screenshots use a minty teal) */
-    --bg-arch: #86cbbf;         /* section background */
-    --text:    #1a1a1a;
-    --muted:   #5a5f64;
-    --card-bg: #ffffff;
-    --star:    #ffb400;
-    --tick:    #0ea676;
-    --ring:    rgba(0,0,0,.08);
-    --ring-strong: rgba(0,0,0,.18);
-
-    /* sizing tokens (feel free to align to your design scale) */
-    --container: min(1200px, 92vw);
-    --radius: 16px;
-    --space-1: 8px;
-    --space-2: 12px;
-    --space-3: 16px;
-    --space-4: 24px;
-    --space-5: 32px;
-    --space-6: 48px;
+    --text:#1D1D1F;
+    --wave:#E8E1D5;        /* arched background colour (bottom area) */
+    --card:#FFFFFF;
+    --gap:24px;            /* spacing between cards (≥640px) */
+    --radius:16px;
+    --sidepad:72px;        /* keeps arrows away from cards */
   }
 
-  /* --- Section shell with the big arch at the top --- */
-  .reviews {
-    position: relative;
-    background: var(--bg-arch);
-    color: var(--text);
-    overflow: hidden;
-    padding: clamp(56px, 8vw, 110px) 0 clamp(56px, 6vw, 90px);
+  /* Base */
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#fff;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+
+  /* ===== Section with full-bleed arched background ===== */
+  .reviews{
+    position:relative;
+    overflow:hidden;                /* no inner scroll on mobile */
+    padding:56px 0 18px;
+    background:var(--wave);         /* beige lives at the bottom */
   }
-  /* Draw the big smooth arch with a giant circle above the section */
+  /* White “sky” sliced into the beige with a CRISP edge (no blur)  */
   .reviews::before{
     content:"";
-    position:absolute;
-    left:50%;
-    transform:translateX(-50%);
-    top: -95vw;                 /* push circle way up so only the bottom arc is visible */
-    width: 190vw;
-    aspect-ratio: 1 / 1;
-    background: var(--bg-arch);
-    border-radius: 50%;
-    pointer-events: none;
+    position:absolute; inset:0; z-index:0;
+    /* Large ellipse whose centre is above the section.
+       Same stop values -> hard edge, no feathering. */
+    background:
+      radial-gradient(180% 620px at 50% -180px,#ffffff 60%,transparent 60%);
+    pointer-events:none;
   }
 
-  .container{ width: var(--container); margin-inline:auto; }
+  /* Content container */
+  .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
 
-  /* --- Header copy (use your own fonts & sizes; structure matches screenshot) --- */
-  .intro{
-    text-align:center;
-    margin-bottom: clamp(24px, 4vw, 36px);
-    color:#0f2624; /* slightly darker over teal; replace as needed */
-  }
-  .intro .eyebrow{
-    display:block;
-    font-weight: 700;
-    letter-spacing: .2px;
-    margin-bottom: var(--space-2);
-    opacity: .9;
-  }
-  .intro h2{
-    margin: 0 0 var(--space-3);
-    font-size: clamp(28px, 6vw, 48px);
-    line-height: 1.1;
-  }
-  .intro p{
-    margin: 0 auto;
-    font-size: clamp(16px, 2.6vw, 22px);
-    max-width: 42ch;
-    color: #15433f;
-  }
+  /* Header */
+  header{text-align:center;margin:0 0 14px}
+  header h2{margin:0 0 6px;font:700 48px/1.1 Poppins,Inter,system-ui}
+  header .sub{margin:0 0 8px;opacity:.9}
+  header .meta{margin:0}
+  header .meta strong{font-weight:700}
 
-  /* --- Rating row (Excellent ⭐⭐⭐⭐⭐ 4.85 based on 2,099 reviews) --- */
-  .rating-row{
-    display:flex;
-    flex-wrap:wrap;
-    align-items:center;
-    justify-content:center;
-    gap: 14px 20px;
-    margin: clamp(14px, 3vw, 20px) 0 var(--space-5);
-    color: #0f2624;
-    font-weight: 700;
-  }
-  .stars{
-    position: relative;
-    display:inline-flex;
-    gap: 4px;
-    vertical-align: middle;
-  }
-  .stars svg{
-    width: 22px; height: 22px; display:block;
-  }
-  .stars .full path{ fill: var(--star); }
-  .stars .half path{ fill: url(#halfFill); }
-  .stars .empty path{ fill: #d8e1df; }
-
-  .rating-small{
-    font-weight: 600;
-    color: #0f2624;
-    opacity:.9;
-  }
-
-  /* --- Carousel --- */
+  /* ===== Carousel ===== */
+  .shell{position:relative;padding:0 var(--sidepad)}
   .viewport{
-    position: relative;
-    overflow: hidden;
-    width: var(--container);
-    margin-inline: auto;
-    padding: 0 var(--space-2);
+    overflow:hidden;                 /* kill inner scrolling */
+    border-radius:20px;
+    touch-action:pan-y;              /* vertical scroll passes through */
   }
   .track{
-    list-style:none;
-    margin:0;
-    padding:0;
-    display:flex;
-    gap: clamp(0px, 1vw, 22px);
-    will-change: transform;
+    display:flex;gap:var(--gap);padding:0;margin:0;list-style:none;
+    will-change:transform;transition:transform .55s ease;
   }
+
+  /* Card */
   .card{
-    flex: 0 0 auto;
-    width: clamp(280px, 26vw, 340px);   /* 1 on mobile, up to 4 on desktop */
-    background: var(--card-bg);
-    border-radius: var(--radius);
-    padding: clamp(16px, 2vw, 20px);
-    box-shadow: 0 1px 0 var(--ring), 0 12px 24px -12px var(--ring-strong);
-    min-height: 210px;
+    background:var(--card);
+    border-radius:var(--radius);
+    /* No shadow – you asked to remove it when in the beige area */
+    box-shadow:none;
+    padding:20px;display:flex;flex-direction:column;min-height:180px;
+    min-width:calc((100% - 3*var(--gap)) / 4);   /* default for ≥1024px (overridden below) */
   }
-  .card .top{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap: 10px;
-    margin-bottom: 8px;
+  .top{
+    display:flex;align-items:center;gap:12px;margin-bottom:6px;
+    min-height:28px;                 /* keeps row heights consistent */
   }
-  .card .name{
-    font-weight: 700;
-    color: var(--text);
+  .name{
+    font-weight:700;flex:1 1 auto;min-width:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis; /* long names don't push stars */
   }
-  .card .verify{
-    display:flex; align-items:center; gap:8px;
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin-bottom: 10px;
+  .stars{
+    flex:0 0 auto;width:6.6ch;text-align:right;letter-spacing:.06em;
   }
-  .card .verify svg{ width:16px; height:16px; fill: var(--tick); }
-  .card .body{
-    color: var(--text);
-    line-height: 1.45;
-  }
+  .stars .full{color:#1D1D1F}
+  .stars .empty{color:#1D1D1F;opacity:.25}
+  .verify{display:flex;align-items:center;gap:6px;font-size:13px;opacity:.9}
+  .verify svg{width:14px;height:14px;display:block;fill:#1D1D1F}
+  .body{margin-top:8px;line-height:1.45}
 
-  /* --- Nav buttons (round) --- */
+  /* Arrows – outside the cards but inside the beige area */
   .nav{
-    position:absolute;
-    z-index:2;
-    inset: 0;
-    pointer-events: none; /* children re-enable */
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;
+    background:#fff;color:#1D1D1F;box-shadow:0 8px 22px rgba(0,0,0,.16);
+    display:grid;place-items:center;font-size:28px;line-height:1;
+    transition:transform .16s ease;
   }
-  .nav button{
-    position:absolute;
-    top:50%;
-    transform: translateY(-50%);
-    width: 44px; height: 44px;
-    border: 0;
-    border-radius: 999px;
-    background: #fff;
-    color: #111;
-    box-shadow: 0 2px 10px rgba(0,0,0,.18);
-    display:grid; place-items:center;
-    cursor:pointer;
-    pointer-events: auto;
-  }
-  .nav .prev{ left: 0; }
-  .nav .next{ right: 0; }
-  .nav svg{ width: 20px; height: 20px; }
+  .nav:hover{transform:translateY(-50%) scale(1.06)}
+  .prev{left:18px}
+  .next{right:18px}
 
-  /* --- Footer row with Play and badge --- */
-  .footer{
-    width: var(--container);
-    margin: var(--space-4) auto 0;
-    display:flex;
-    align-items:center;
-    justify-content:flex-end;
-    gap: 18px;
-    color:#0f2624;
-  }
-  .toggle-play{
-    display:inline-flex; align-items:center; gap:8px;
-    background: transparent; border:0; color:#0f2624;
-    font-weight: 600; cursor:pointer; padding:8px 10px;
-  }
-  .toggle-play svg{ width: 16px; height: 16px; }
-  .badge{
-    display:inline-flex; align-items:center; gap:8px;
-    background:#fff; color:#111;
-    padding: 8px 12px; border-radius: 999px;
-    box-shadow: 0 1px 0 var(--ring), 0 10px 22px -14px var(--ring-strong);
-  }
-  .badge .star{ width:16px; height:16px; color: var(--star); }
+  /* Footer brands as plain text (not pills/links) */
+  .brands{display:flex;gap:10px;justify-content:flex-end;margin:12px var(--sidepad) 0 0}
+  .brands span{font-size:14px;opacity:.75;font-weight:600}
 
-  /* --- Mobile tweaks (match screenshot: 1 card, no gaps) --- */
-  @media (max-width: 640px){
-    .viewport{ padding: 0 var(--space-3); }
-    .track{ gap: 0; }
-    .nav .prev{ left: -2px; }
-    .nav .next{ right: -2px; }
-    .footer{ justify-content: space-between; padding: 0 var(--space-3); }
+  /* ===== Responsive per-view widths ===== */
+
+  /* Mobile — exactly ONE card, no gap so nothing peeks in */
+  @media (max-width:639.98px){
+    header h2{font-size:42px}
+    .track{gap:0}
+    .card{min-width:100%}                  /* 1 per view – no “half card” */
+  }
+
+  /* Tablet — TWO cards */
+  @media (min-width:640px) and (max-width:1023.98px){
+    .card{min-width:calc((100% - var(--gap)) / 2)}
+  }
+
+  /* Desktop — FOUR cards */
+  @media (min-width:1024px){
+    .card{min-width:calc((100% - 3*var(--gap)) / 4)}
+    header h2{font-size:54px}
   }
 </style>
 </head>
 <body>
 
 <section class="reviews" aria-label="Customer reviews">
-  <div class="container intro">
-    <span class="eyebrow" aria-hidden="true"></span>
-    <h2>Our customers say it best</h2>
-    <p>We’re changing how people see car care. Our 4.9 star rating tells the story better than we can</p>
-  </div>
+  <div class="container">
+    <header>
+      <h2>Our customers say it best</h2>
+      <p class="sub">Our rating tells the story better than we can</p>
+      <p class="meta"><strong>Excellent</strong> ★★★★★ — <strong>4.95</strong> based on <strong>328</strong> reviews</p>
+    </header>
 
-  <!-- Rating row -->
-  <div class="container rating-row" aria-label="Overall rating">
-    <span>Excellent</span>
-
-    <span class="stars" aria-label="4.5 out of 5 stars">
-      <!-- star symbol defs -->
-      <svg aria-hidden="true" style="position:absolute; width:0; height:0">
-        <defs>
-          <linearGradient id="halfFill">
-            <stop offset="50%" stop-color="var(--star)"/>
-            <stop offset="50%" stop-color="#d8e1df"/>
-          </linearGradient>
-          <symbol id="star" viewBox="0 0 24 24">
-            <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-          </symbol>
-        </defs>
-      </svg>
-      <svg class="full"  aria-hidden="true"><use href="#star"/></svg>
-      <svg class="full"  aria-hidden="true"><use href="#star"/></svg>
-      <svg class="full"  aria-hidden="true"><use href="#star"/></svg>
-      <svg class="full"  aria-hidden="true"><use href="#star"/></svg>
-      <svg class="half"  aria-hidden="true"><use href="#star"/></svg>
-    </span>
-
-    <span class="rating-small">4.85 based on <strong>2,099</strong> reviews</span>
-  </div>
-
-  <!-- Carousel -->
-  <div class="viewport" role="region" aria-roledescription="carousel" aria-label="Customer quotes">
-    <ul id="track" class="track" aria-live="off"></ul>
-
-    <!-- round nav buttons -->
-    <div class="nav" aria-hidden="false">
-      <button class="prev" aria-label="Previous review">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M15.5 4.5 8 12l7.5 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-      <button class="next" aria-label="Next review">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M8.5 4.5 16 12l-7.5 7.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
+    <div class="shell">
+      <button class="nav prev" aria-label="Previous reviews">‹</button>
+      <div class="viewport">
+        <ul class="track" id="track" aria-live="polite"></ul>
+      </div>
+      <button class="nav next" aria-label="Next reviews">›</button>
     </div>
-  </div>
 
-  <!-- Footer controls -->
-  <div class="footer">
-    <button class="toggle-play" aria-pressed="true" aria-label="Pause autoplay">
-      <svg class="icon" viewBox="0 0 20 20" fill="currentColor"><path d="M7 4h3v12H7zM12 4h3v12h-3z"/></svg>
-      <span class="label">Pause</span>
-    </button>
-
-    <span class="badge" aria-label="Powered by Reviews.io">
-      <svg class="star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-      <strong>REVIEWS.io</strong>
-    </span>
+    <div class="brands"><span>Google</span>·<span>ClickMechanic</span></div>
   </div>
 </section>
 
 <script>
-/* =======================
-   Reviews Carousel (IIFE)
-   ======================= */
 (function(){
+  // ===== Reviews data (your copy) =====
   const REVIEWS = [
     {name:"Dan B.",        text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
     {name:"Michael A.",    text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
@@ -298,52 +166,49 @@
     {name:"Jay T.",        text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices.", rating:5}
   ];
 
-  const track    = document.getElementById('track');
-  const prevBtn  = document.querySelector('.prev');
-  const nextBtn  = document.querySelector('.next');
-  const viewport = document.querySelector('.viewport');
-  const playBtn  = document.querySelector('.toggle-play');
-  const playIcon = playBtn.querySelector('svg.icon');
-  const playLbl  = playBtn.querySelector('.label');
+  const track   = document.getElementById('track');
+  const prevBtn = document.querySelector('.prev');
+  const nextBtn = document.querySelector('.next');
+  const viewport= document.querySelector('.viewport');
 
+  /* Helpers */
   function stars(n){
     return `<span class="stars" aria-label="${n} out of 5 stars">
-      <span class="full">${'★'.repeat(n)}</span><span class="empty">${'★'.repeat(5-n)}</span>
-    </span>`;
+              <span class="full">${'★'.repeat(n)}</span><span class="empty">${'★'.repeat(5-n)}</span>
+            </span>`;
   }
   const tick = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.25a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5Zm-1 8.01L4.97 7.23l.99-.99L7 7.28 9.99 4.3l.99.99L7 9.26Z"/></svg>`;
 
   function card({name,text,rating}){
-    return `<li class="card" role="group" aria-label="${name} review">
-      <div class="top"><div class="name">${name}</div>
-        <span class="stars" aria-label="${rating} out of 5 stars">
-          <span class="full">${'★'.repeat(rating)}</span>
-          <span class="empty">${'★'.repeat(5-rating)}</span>
-        </span>
-      </div>
+    return `<li class="card">
+      <div class="top"><div class="name">${name}</div>${stars(rating)}</div>
       <div class="verify">${tick}<span>Verified Customer</span></div>
       <div class="body">${text}</div>
     </li>`;
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  /* Clone ends for infinite loop (max visible = 4) */
+  // ===== Infinite loop setup =====
   const perViewMax = 4;
-  const kids = Array.from(track.children);
-  kids.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
-  kids.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
+  const originals = Array.from(track.children);
+  originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
+  originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
-  /* Measure step using actual computed gap so mobile (gap=0) shows 1 card */
+  // ===== State & sizing =====
   let index = perViewMax;
-  let step = 0, gapPx = 0;
+  let step  = 0; // distance per move (card width + gap)
+
+  function currentGap(){
+    // Read the actual computed gap (0 on mobile)
+    const s = getComputedStyle(track);
+    return parseFloat(s.columnGap || s.gap) || 0;
+  }
 
   function recalc(){
-    const ref = track.children[perViewMax];
-    if(!ref) return;
-    const styles = getComputedStyle(track);
-    gapPx = parseFloat(styles.columnGap || styles.gap) || 0;
-    step  = ref.getBoundingClientRect().width + gapPx;
-    move(index, false);
+    const firstReal = track.children[perViewMax];
+    if(!firstReal) return;
+    step = firstReal.getBoundingClientRect().width + currentGap();
+    move(index,false);
   }
 
   function move(i, animate=true){
@@ -351,80 +216,36 @@
     track.style.transform  = `translateX(${-i * step}px)`;
     index = i;
   }
+
   function next(){ move(index+1, true); }
   function prev(){ move(index-1, true); }
 
   track.addEventListener('transitionend', ()=>{
     const start = perViewMax;
     const end   = start + REVIEWS.length - 1;
-    if (index > end)   move(start + (index - end - 1), false);
+    if (index > end)  move(start + (index - end - 1), false);
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  /* Autoplay (10s) */
-  let t=null, paused=false;
-  function start(){ stop(); t=setInterval(()=>{ if(!paused) next(); }, 10000); }
+  // Autoplay every 10s; pause on hover/visibility
+  let t=null, paused=false, visible=true;
+  function start(){ stop(); t=setInterval(()=>{ if(!paused && visible) next(); }, 10000); }
   function stop(){ if(t) clearInterval(t); }
 
-  /* Wire buttons (was missing) */
-  prevBtn.addEventListener('click', prev);
-  nextBtn.addEventListener('click', next);
-
-  /* Pause on hover (desktop) */
   viewport.addEventListener('mouseenter', ()=>paused=true);
   viewport.addEventListener('mouseleave', ()=>paused=false);
 
-  /* Play/Pause toggle button */
-  function setPlayUI(){
-    if(paused){
-      playBtn.setAttribute('aria-pressed','false');
-      playBtn.setAttribute('aria-label','Play autoplay');
-      playLbl.textContent = 'Play';
-      // change icon to ▶
-      playIcon.innerHTML = '<path d="M6 4l10 6-10 6z"/>';
-    }else{
-      playBtn.setAttribute('aria-pressed','true');
-      playBtn.setAttribute('aria-label','Pause autoplay');
-      playLbl.textContent = 'Pause';
-      // change icon to pause ||
-      playIcon.innerHTML = '<path d="M7 4h3v12H7zM12 4h3v12h-3z"/>';
-    }
-  }
-  playBtn.addEventListener('click', ()=>{
-    paused = !paused;
-    setPlayUI();
-  });
+  const io = new IntersectionObserver((entries)=>{ visible = entries[0].isIntersecting; }, {threshold:.2});
+  io.observe(viewport);
 
-  /* Swipe with intent: only when horizontal motion dominates */
-  let sx=0, sy=0, dx=0, dy=0, swiping=false;
-  viewport.addEventListener('touchstart', e=>{
-    const t=e.touches[0]; sx=t.clientX; sy=t.clientY;
-    dx=0; dy=0; swiping=false;
-    track.style.transition='none';
-  }, {passive:true});
+  // Basic swipe
+  let sx=0, dx=0, touching=false;
+  viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
+  viewport.addEventListener('touchmove',  e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
+  viewport.addEventListener('touchend',   ()=>{ touching=false; Math.abs(dx)>step*0.25 ? (dx<0?next():prev()) : move(index,true); });
 
-  viewport.addEventListener('touchmove', e=>{
-    const t=e.touches[0];
-    dx = t.clientX - sx;
-    dy = t.clientY - sy;
-    if(!swiping){
-      if(Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy)) swiping = true;
-      else return; // let the page scroll vertically
-    }
-    track.style.transform = `translateX(${-index*step - dx}px)`;
-  }, {passive:true});
-
-  viewport.addEventListener('touchend', ()=>{
-    if(swiping && Math.abs(dx) > step*0.25) (dx<0 ? next() : prev());
-    else move(index, true);
-  });
-
-  /* Keyboard support */
-  viewport.addEventListener('keydown', (e)=>{
-    if(e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
-    if(e.key === 'ArrowRight'){ e.preventDefault(); next(); }
-  });
-  viewport.tabIndex = 0;
+  prevBtn.addEventListener('click', prev);
+  nextBtn.addEventListener('click', next);
 
   window.addEventListener('resize', recalc);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(recalc);
@@ -432,7 +253,6 @@
   recalc();
   move(index,false);
   start();
-  setPlayUI();
 })();
 </script>
 </body>
