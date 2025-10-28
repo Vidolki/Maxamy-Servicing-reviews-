@@ -12,123 +12,164 @@
 <style>
   :root{
     --text:#1D1D1F;
-    --wave:#E8E1D5;        /* arched background colour (bottom area) */
+    --wave:#E8E1D5;            /* beige area (bottom) */
     --card:#FFFFFF;
-    --gap:24px;            /* spacing between cards (≥640px) */
+    --gap:24px;                /* spacing between cards (≥640px) */
     --radius:16px;
-    --sidepad:72px;        /* keeps arrows away from cards */
+    --sidepad:72px;            /* keeps arrows away from cards on desktop */
   }
 
-  /* Base */
   *{box-sizing:border-box}
-  html,body{margin:0;background:#fff;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-
-  /* ===== Section with full-bleed arched background ===== */
-  .reviews{
-    position:relative;
-    overflow:hidden;                /* no inner scroll on mobile */
-    padding:56px 0 18px;
-    background:var(--wave);         /* beige lives at the bottom */
+  html,body{
+    margin:0;
+    background:#fff;
+    color:var(--text);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial
   }
-  /* White “sky” sliced into the beige with a CRISP edge (no blur)  */
-  .reviews::before{
+
+  /* ============ FULL-BLEED SECTION + ARCH ============ */
+  /* id gives us high specificity so site CSS won't override */
+  #mx-reviews{
+    position:relative;
+    overflow:hidden;                 /* never becomes its own scroll area */
+    width:100vw;                     /* break out of any page container */
+    margin-left:50%;
+    transform:translateX(-50%);      /* re-center the full-bleed band */
+    background:var(--wave);          /* beige lives underneath */
+    padding:72px 0 32px;             /* taller block (like reference) */
+    overscroll-behavior-y:contain;   /* avoid weird nested bounces */
+  }
+  /* White “sky” cut into the beige with a SHARP edge (no blur) */
+  #mx-reviews::before{
     content:"";
     position:absolute; inset:0; z-index:0;
-    /* Large ellipse whose centre is above the section.
-       Same stop values -> hard edge, no feathering. */
+    /* Wider + deeper ellipse, centred; both stops equal -> crisp edge */
     background:
-      radial-gradient(180% 620px at 50% -180px,#ffffff 60%,transparent 60%);
+      radial-gradient(240% 840px at 50% -280px, #ffffff 58%, transparent 58%);
     pointer-events:none;
   }
 
-  /* Content container */
-  .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+  /* ============ CONTENT ============ */
+  #mx-reviews .container{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 16px;
+    position:relative;
+    z-index:1; /* sits above the arch */
+  }
 
-  /* Header */
-  header{text-align:center;margin:0 0 14px}
-  header h2{margin:0 0 6px;font:700 48px/1.1 Poppins,Inter,system-ui}
-  header .sub{margin:0 0 8px;opacity:.9}
-  header .meta{margin:0}
-  header .meta strong{font-weight:700}
+  #mx-reviews header{ text-align:center; margin:0 0 16px }
+  #mx-reviews header h2{
+    margin:0 0 8px;
+    font:700 54px/1.1 Poppins,Inter,system-ui;
+  }
+  #mx-reviews header .sub{ margin:0 0 8px; opacity:.9 }
+  #mx-reviews header .meta{ margin:0 }
+  #mx-reviews header .meta strong{ font-weight:700 }
 
-  /* ===== Carousel ===== */
-  .shell{position:relative;padding:0 var(--sidepad)}
-  .viewport{
-    overflow:hidden;                 /* kill inner scrolling */
+  /* ============ CAROUSEL ============ */
+  #mx-reviews .shell{ position:relative; padding:0 var(--sidepad) }
+  #mx-reviews .viewport{
+    overflow:hidden !important;      /* kill inner scroll */
     border-radius:20px;
     touch-action:pan-y;              /* vertical scroll passes through */
   }
-  .track{
-    display:flex;gap:var(--gap);padding:0;margin:0;list-style:none;
-    will-change:transform;transition:transform .55s ease;
+  #mx-reviews .track{
+    display:flex;
+    gap:var(--gap);
+    padding:0;
+    margin:0;
+    list-style:none;
+    will-change:transform;
+    transition:transform .55s ease;
   }
 
   /* Card */
-  .card{
+  #mx-reviews .card{
     background:var(--card);
     border-radius:var(--radius);
-    /* No shadow – you asked to remove it when in the beige area */
-    box-shadow:none;
-    padding:20px;display:flex;flex-direction:column;min-height:180px;
-    min-width:calc((100% - 3*var(--gap)) / 4);   /* default for ≥1024px (overridden below) */
+    box-shadow:none;                 /* no shadows in the beige area */
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    min-height:180px;
+    /* desktop default is overridden below by media queries */
+    min-width:calc((100% - 3*var(--gap)) / 4);
   }
-  .top{
-    display:flex;align-items:center;gap:12px;margin-bottom:6px;
-    min-height:28px;                 /* keeps row heights consistent */
-  }
-  .name{
-    font-weight:700;flex:1 1 auto;min-width:0;
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis; /* long names don't push stars */
-  }
-  .stars{
-    flex:0 0 auto;width:6.6ch;text-align:right;letter-spacing:.06em;
-  }
-  .stars .full{color:#1D1D1F}
-  .stars .empty{color:#1D1D1F;opacity:.25}
-  .verify{display:flex;align-items:center;gap:6px;font-size:13px;opacity:.9}
-  .verify svg{width:14px;height:14px;display:block;fill:#1D1D1F}
-  .body{margin-top:8px;line-height:1.45}
 
-  /* Arrows – outside the cards but inside the beige area */
-  .nav{
-    position:absolute;top:50%;transform:translateY(-50%);
-    width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;
-    background:#fff;color:#1D1D1F;box-shadow:0 8px 22px rgba(0,0,0,.16);
-    display:grid;place-items:center;font-size:28px;line-height:1;
+  /* Title row keeps a fixed height so stars don't jump when names wrap */
+  #mx-reviews .top{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:6px;
+    min-height:28px;
+  }
+  #mx-reviews .name{
+    font-weight:700;
+    flex:1 1 auto;
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;          /* long names won't push stars down */
+  }
+  #mx-reviews .stars{
+    flex:0 0 auto;
+    width:6.6ch;                     /* keeps row alignment tight */
+    text-align:right;
+    letter-spacing:.06em;
+  }
+  #mx-reviews .stars .full{ color:#1D1D1F }
+  #mx-reviews .stars .empty{ color:#1D1D1F; opacity:.25 }
+  #mx-reviews .verify{ display:flex; align-items:center; gap:6px; font-size:13px; opacity:.9 }
+  #mx-reviews .verify svg{ width:14px; height:14px; display:block; fill:#1D1D1F }
+  #mx-reviews .body{ margin-top:8px; line-height:1.45 }
+
+  /* Arrows – outside the cards but inside the beige band */
+  #mx-reviews .nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:46px; height:46px; border-radius:50%; border:0; cursor:pointer;
+    background:#fff; color:#1D1D1F; box-shadow:0 8px 22px rgba(0,0,0,.16);
+    display:grid; place-items:center; font-size:28px; line-height:1;
     transition:transform .16s ease;
   }
-  .nav:hover{transform:translateY(-50%) scale(1.06)}
-  .prev{left:18px}
-  .next{right:18px}
+  #mx-reviews .nav:hover{ transform:translateY(-50%) scale(1.06) }
+  #mx-reviews .prev{ left:18px }
+  #mx-reviews .next{ right:18px }
 
-  /* Footer brands as plain text (not pills/links) */
-  .brands{display:flex;gap:10px;justify-content:flex-end;margin:12px var(--sidepad) 0 0}
-  .brands span{font-size:14px;opacity:.75;font-weight:600}
+  /* Brands as plain text, not pills/links */
+  #mx-reviews .brands{
+    display:flex; gap:10px; justify-content:flex-end;
+    margin:12px var(--sidepad) 0 0;
+  }
+  #mx-reviews .brands span{ font-size:14px; opacity:.75; font-weight:600 }
 
-  /* ===== Responsive per-view widths ===== */
+  /* ============ RESPONSIVE ============ */
 
-  /* Mobile — exactly ONE card, no gap so nothing peeks in */
+  /* MOBILE — exactly ONE card, no peeking, comfy arrows */
   @media (max-width:639.98px){
-    header h2{font-size:42px}
-    .track{gap:0}
-    .card{min-width:100%}                  /* 1 per view – no “half card” */
+    #mx-reviews header h2{ font-size:42px }
+    #mx-reviews .shell{ padding:0 16px }             /* bring arrows in */
+    #mx-reviews .track{ gap:0 !important }           /* no gap -> no half card */
+    #mx-reviews .card{ min-width:100% !important }   /* 1 per view */
+    #mx-reviews .prev{ left:8px }                     /* tighter arrow pos */
+    #mx-reviews .next{ right:8px }
   }
 
-  /* Tablet — TWO cards */
+  /* TABLET — two cards */
   @media (min-width:640px) and (max-width:1023.98px){
-    .card{min-width:calc((100% - var(--gap)) / 2)}
+    #mx-reviews .card{ min-width:calc((100% - var(--gap)) / 2) }
   }
 
-  /* Desktop — FOUR cards */
+  /* DESKTOP — four cards */
   @media (min-width:1024px){
-    .card{min-width:calc((100% - 3*var(--gap)) / 4)}
-    header h2{font-size:54px}
+    #mx-reviews .card{ min-width:calc((100% - 3*var(--gap)) / 4) }
   }
 </style>
 </head>
 <body>
 
-<section class="reviews" aria-label="Customer reviews">
+<section id="mx-reviews" aria-label="Customer reviews">
   <div class="container">
     <header>
       <h2>Our customers say it best</h2>
@@ -150,7 +191,7 @@
 
 <script>
 (function(){
-  // ===== Reviews data (your copy) =====
+  /* ===== Reviews data ===== */
   const REVIEWS = [
     {name:"Dan B.",        text:"Super experienced. Turned up on time and did the job quickly and correctly.", rating:5},
     {name:"Michael A.",    text:"This is the 3rd time that I’ve had Graeme service my car. He is punctual, detailed and a pleasure to deal with.", rating:5},
@@ -166,10 +207,10 @@
     {name:"Jay T.",        text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices.", rating:5}
   ];
 
-  const track   = document.getElementById('track');
-  const prevBtn = document.querySelector('.prev');
-  const nextBtn = document.querySelector('.next');
-  const viewport= document.querySelector('.viewport');
+  const track    = document.getElementById('track');
+  const prevBtn  = document.querySelector('#mx-reviews .prev');
+  const nextBtn  = document.querySelector('#mx-reviews .next');
+  const viewport = document.querySelector('#mx-reviews .viewport');
 
   /* Helpers */
   function stars(n){
@@ -188,18 +229,17 @@
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  // ===== Infinite loop setup =====
+  /* ===== Infinite loop setup ===== */
   const perViewMax = 4;
-  const originals = Array.from(track.children);
+  const originals  = Array.from(track.children);
   originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
   originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
-  // ===== State & sizing =====
+  /* ===== Sizing / movement ===== */
   let index = perViewMax;
   let step  = 0; // distance per move (card width + gap)
 
   function currentGap(){
-    // Read the actual computed gap (0 on mobile)
     const s = getComputedStyle(track);
     return parseFloat(s.columnGap || s.gap) || 0;
   }
@@ -227,7 +267,7 @@
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  // Autoplay every 10s; pause on hover/visibility
+  /* Autoplay every 10s; pause on hover & when off-screen */
   let t=null, paused=false, visible=true;
   function start(){ stop(); t=setInterval(()=>{ if(!paused && visible) next(); }, 10000); }
   function stop(){ if(t) clearInterval(t); }
@@ -238,7 +278,7 @@
   const io = new IntersectionObserver((entries)=>{ visible = entries[0].isIntersecting; }, {threshold:.2});
   io.observe(viewport);
 
-  // Basic swipe
+  /* Swipe */
   let sx=0, dx=0, touching=false;
   viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
   viewport.addEventListener('touchmove',  e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
