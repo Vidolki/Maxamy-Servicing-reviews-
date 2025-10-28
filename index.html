@@ -12,8 +12,8 @@
 <style>
   :root{
     --text:#1D1D1F;
-    --wave:#E8E1D5;   /* arched background */
-    --card:#FFFFFF;
+    --wave:#E8E1D5;                 /* beige arch */
+    --card:#fff;
     --gap:24px;
     --radius:16px;
     --sidepad:72px;
@@ -22,57 +22,53 @@
   *{box-sizing:border-box}
   html,body{margin:0;background:#fff;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
 
-  /* Section with a CRISP, flipped arch (no blur) */
+  /* Full-bleed section with a CRISP bottom arch (white → beige) */
   .reviews{
     position:relative;
-    padding:44px 0 14px;
+    padding:64px 0 28px;            /* bigger like WashDoctors */
     overflow:hidden;
+    isolation:isolate;              /* keeps the pseudo element behind */
   }
   .reviews::before{
     content:"";
-    position:absolute; inset:0; z-index:0;
+    position:absolute; left:0; right:0; bottom:0;
+    height:clamp(440px, 56vw, 780px);   /* big dome height */
     background:var(--wave);
-    /* crisp curved top edge, wave extends downward */
-    clip-path:ellipse(140% 60% at 50% 0%);
-    /* fallback (keeps shape if clip-path unsupported) */
-    -webkit-clip-path:ellipse(140% 60% at 50% 0%);
-    pointer-events:none;
+    /* crisp arch: a wide ellipse sitting at the bottom edge */
+    clip-path:ellipse(125% 70% at 50% 0%);
+    z-index:-1;
   }
 
-  .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+  .container{max-width:1160px;margin:0 auto;padding:0 16px;position:relative}
 
-  header{text-align:center;margin:0 0 14px}
-  header h2{margin:0 0 6px;font:700 48px/1.1 Poppins,Inter,system-ui}
-  header .sub{margin:0 0 8px;opacity:.9}
+  header{text-align:center;margin:0 0 18px}
+  header h2{margin:0 0 8px;font:700 54px/1.08 Poppins,Inter,system-ui}
+  header .sub{margin:0 6px 10px;opacity:.9}
   header .meta{margin:0}
   header .meta strong{font-weight:700}
 
   /* Carousel */
   .shell{position:relative;padding:0 var(--sidepad)}
-  .viewport{overflow:hidden;border-radius:20px}
+  .viewport{
+    overflow:hidden;border-radius:20px;
+    touch-action:pan-y;             /* page scroll stays vertical on mobile */
+  }
   .track{
     display:flex;gap:var(--gap);padding:0;margin:0;list-style:none;
     will-change:transform;transition:transform .55s ease;
   }
 
-  /* Cards: NO SHADOW, flat white on the wave area */
+  /* Cards: no shadow, clean */
   .card{
     background:var(--card);
     border-radius:var(--radius);
-    box-shadow:none;                 /* <- removed */
-    padding:20px;
-    display:flex;flex-direction:column;min-height:180px;
-    min-width:calc(100% - 3*var(--gap));  /* 1 per view (mobile) */
+    box-shadow:none;                /* ← removed */
+    padding:20px;display:flex;flex-direction:column;min-height:180px;
+    min-width:calc(100% - 3*var(--gap));   /* 1 per view on mobile */
   }
-
-  /* Name + stars always on one line */
   .top{display:flex;align-items:center;gap:12px;margin-bottom:6px}
-  .name{
-    font-weight:700;
-    flex:1 1 auto; min-width:0;              /* allow shrink */
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; /* keep one line */
-  }
-  .stars{flex:0 0 auto; margin-left:12px; letter-spacing:.06em}
+  .name{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stars{margin-left:auto;letter-spacing:.06em;white-space:nowrap}
   .stars .full{color:#1D1D1F}
   .stars .empty{color:#1D1D1F;opacity:.25}
 
@@ -92,17 +88,16 @@
   .prev{left:18px}
   .next{right:18px}
 
-  /* Footer brands as plain text (not pills/links) */
-  .brands{display:flex;gap:10px;justify-content:flex-end;margin:10px var(--sidepad) 0 0}
+  /* Footer brands (plain text) */
+  .brands{display:flex;gap:10px;justify-content:flex-end;margin:14px var(--sidepad) 0 0}
   .brands span{font-size:14px;opacity:.75;font-weight:600}
 
   /* Per-view widths */
   @media (min-width:640px){
-    .card{min-width:calc((100% - var(--gap)) / 2);}
+    .card{min-width:calc((100% - var(--gap)) / 2);}     /* 2 per view */
   }
   @media (min-width:1024px){
-    .card{min-width:calc((100% - 3*var(--gap)) / 4);}
-    header h2{font-size:54px}
+    .card{min-width:calc((100% - 3*var(--gap)) / 4);}   /* 4 per view */
   }
 </style>
 </head>
@@ -145,10 +140,10 @@
     {name:"Jay T.",        text:"Great friendly service. I have been using Maxamy for nearly 11 years now. And always very happy. Very competitive prices.", rating:5}
   ];
 
-  const track = document.getElementById('track');
+  const track   = document.getElementById('track');
   const prevBtn = document.querySelector('.prev');
   const nextBtn = document.querySelector('.next');
-  const viewport = document.querySelector('.viewport');
+  const viewport= document.querySelector('.viewport');
   const GAP = 24;
 
   function stars(n){
@@ -167,13 +162,14 @@
   }
   track.innerHTML = REVIEWS.map(card).join('');
 
-  // Infinite loop clones (max per view 4)
+  // infinite loop setup
   const perViewMax = 4;
   const kids = Array.from(track.children);
   kids.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
   kids.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
 
-  let index = perViewMax, step = 0;
+  let index = perViewMax;
+  let step = 0;
 
   function recalc(){
     const first = track.children[perViewMax];
@@ -197,18 +193,29 @@
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  // Autoplay (10s), pause on hover
+  // autoplay every 10s; pause on hover
   let t=null, paused=false;
   function start(){ stop(); t=setInterval(()=>{ if(!paused) next(); }, 10000); }
   function stop(){ if(t) clearInterval(t); }
   viewport.addEventListener('mouseenter', ()=>paused=true);
   viewport.addEventListener('mouseleave', ()=>paused=false);
 
-  // Touch swipe
-  let sx=0, dx=0, touching=false;
-  viewport.addEventListener('touchstart', e=>{ touching=true; sx=e.touches[0].clientX; dx=0; track.style.transition='none'; }, {passive:true});
-  viewport.addEventListener('touchmove', e=>{ if(!touching) return; dx=e.touches[0].clientX - sx; track.style.transform=`translateX(${-index*step - dx}px)`; }, {passive:true});
-  viewport.addEventListener('touchend', ()=>{ touching=false; Math.abs(dx)>step*0.25 ? (dx<0?next():prev()) : move(index,true); });
+  // swipe with vertical-guard so the page doesn’t “stick”
+  let sx=0, sy=0, dx=0, dy=0, dragging=false;
+  viewport.addEventListener('touchstart', e=>{
+    dragging=true; const t=e.touches[0]; sx=t.clientX; sy=t.clientY; dx=dy=0; track.style.transition='none';
+  }, {passive:true});
+  viewport.addEventListener('touchmove', e=>{
+    if(!dragging) return;
+    const t=e.touches[0]; dx=t.clientX-sx; dy=t.clientY-sy;
+    if(Math.abs(dy) > Math.abs(dx)) return; // let page scroll vertically
+    e.preventDefault(); // we’re swiping horizontally
+    track.style.transform = `translateX(${-index*step - dx}px)`;
+  }, {passive:false});
+  viewport.addEventListener('touchend', ()=>{
+    if(!dragging) return; dragging=false;
+    Math.abs(dx)>step*0.25 ? (dx<0?next():prev()) : move(index,true);
+  });
 
   prevBtn.addEventListener('click', prev);
   nextBtn.addEventListener('click', next);
