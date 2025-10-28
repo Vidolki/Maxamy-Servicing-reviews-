@@ -16,39 +16,56 @@
     --gap:24px;                 /* desktop/tablet card gap */
     --radius:16px;
     --sidepad:72px;             /* arrow inset */
+    --vpad-top:6px;             /* almost flush above cards */
+    --vpad-bottom:0px;          /* almost flush below brand row */
   }
 
   *{box-sizing:border-box}
-  html,body{margin:0;background:transparent;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+  html,body{
+    margin:0;
+    background:transparent;     /* fully transparent around the block */
+    color:var(--text);
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  }
 
-  /* ===== Section ===== */
+  /* ===== Section (tight vertical spacing) ===== */
   .reviews{
-    background:transparent;     /* fully transparent section */
-    padding:18px 0;             /* tight top/bottom, per your screenshot */
+    background:transparent;
+    padding:var(--vpad-top) 0 var(--vpad-bottom);
+    margin:0;
     overflow:hidden;            /* no inner scroll capture */
     position:relative;
   }
 
-  .container{max-width:1120px;margin:0 auto;padding:0 16px;position:relative;z-index:1}
+  .container{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 16px;             /* no extra bottom padding */
+    position:relative;
+    z-index:1;
+  }
 
   /* ===== Carousel ===== */
-  .shell{position:relative;padding:0 var(--sidepad)}
+  .shell{position:relative; padding:0 var(--sidepad)}
   .viewport{
     overflow:hidden;            /* kills inner scrolling */
-    touch-action:pan-y;         /* let the page scroll vertically */
-    border-radius:20px;         /* soft clipping at edges */
+    touch-action:pan-y;         /* allow page to scroll vertically */
+    border-radius:20px;
+    margin:0;                   /* no extra bottom space */
   }
   .track{
-    display:flex; gap:var(--gap);
+    display:flex;
+    gap:var(--gap);
     margin:0; padding:0; list-style:none;
-    will-change:transform; transition:transform .55s ease;
+    will-change:transform;
+    transition:transform .55s ease;
   }
 
   /* ===== Cards ===== */
   .card{
     background:var(--card);
     border-radius:var(--radius);
-    box-shadow:0 10px 24px rgba(0,0,0,.06);   /* subtle; remove if you want perfectly flat */
+    box-shadow:0 10px 24px rgba(0,0,0,.06);
     padding:20px;
     display:flex; flex-direction:column; min-height:180px;
     min-width:calc((100% - 3*var(--gap)) / 4); /* desktop default – overridden below */
@@ -74,8 +91,14 @@
   .nav:hover{transform:translateY(-50%) scale(1.06)}
   .prev{left:18px} .next{right:18px}
 
-  /* ===== Footer brands ===== */
-  .brands{display:flex; gap:10px; justify-content:flex-end; margin:12px var(--sidepad) 0 0}
+  /* ===== Footer brands (tight to cards, no bottom gap) ===== */
+  .brands{
+    display:flex;
+    gap:10px;
+    justify-content:flex-end;
+    margin:8px var(--sidepad) 0 0;  /* small top gap, zero bottom */
+    padding:0;
+  }
   .brands span{font-size:14px; opacity:.75; font-weight:600}
 
   /* ===== Responsive: exact cards per view ===== */
@@ -84,6 +107,7 @@
   @media (max-width:639.98px){
     .track{gap:0}
     .card{min-width:100%}                 /* exactly one card */
+    .nav{width:42px; height:42px}
   }
 
   /* Tablet — 2 cards */
@@ -94,6 +118,12 @@
   /* Desktop — 4 cards */
   @media (min-width:1024px){
     .card{min-width:calc((100% - 3*var(--gap)) / 4)}
+  }
+
+  /* Hard kill any downstream spacing a host theme may inject */
+  section.reviews, .reviews-section, .reviews-wrapper{
+    margin-bottom:0 !important;
+    padding-bottom:0 !important;
   }
 </style>
 </head>
@@ -149,7 +179,7 @@
   track.innerHTML = REVIEWS.map(card).join('');
 
   // ===== Infinite loop scaffolding =====
-  const perViewMax = 4; // we clone this many on each side
+  const perViewMax = 4; // clone this many on each side
   const originals = Array.from(track.children);
   originals.slice(0, perViewMax).forEach(el => track.appendChild(el.cloneNode(true)));
   originals.slice(-perViewMax).forEach(el => track.insertBefore(el.cloneNode(true), track.firstChild));
@@ -163,7 +193,6 @@
   }
 
   function recalc(){
-    // Use the first real card for exact width
     const first = track.children[perViewMax];
     if(!first) return;
     step = first.getBoundingClientRect().width + currentGap();
@@ -186,7 +215,7 @@
     if (index < start) move(end - (start - index - 1), false);
   });
 
-  // Autoplay (optional; easy to remove)
+  // Autoplay (10s); pauses on hover and when out of view
   let t=null, paused=false, visible=true;
   function start(){ stop(); t=setInterval(()=>{ if(!paused && visible) next(); }, 10000); }
   function stop(){ if(t) clearInterval(t); }
